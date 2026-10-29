@@ -4,7 +4,7 @@
 
 项目文章来源于蒋炎岩的[生成式软件工程（GSE/2026）课程讲义](<https://jyywiki.cn/GSE/2026/>)，原站标注 [CC BY-NC 4.0](<https://creativecommons.org/licenses/by-nc/4.0/>)。整理后的文章保留作者、来源链接和授权说明。
 
-第一版已处理第 5 讲「软件工程的来龙去脉」。目录与数据格式见 [CONTRACT.md](<CONTRACT.md>)，开发命令与规范见 [AGENTS.md](<AGENTS.md>)。
+第 5 讲「软件工程的来龙去脉」已完成文章整理；第 7 讲与第 9 讲提供对照矩阵和分组封面样例。目录与数据格式见 [CONTRACT.md](<CONTRACT.md>)，开发命令与规范见 [AGENTS.md](<AGENTS.md>)。
 
 ## 安装
 
@@ -41,7 +41,14 @@ uv run playwright install chromium
    uv run scripts/render_cover.py --analysis work/lect05/analysis.json --output Assets/软件工程的来龙去脉/cover.png --html work/lect05/cover.html
    ```
 
-   第一版为 1600×1200 纵向索引，支持 4–7 个脉络条目。复用 `templates/assets/decoration.png`，不调用图像生成。文字溢出时报错，需调整文案再渲染。
+   封面为 1600×1200，三种布局共用左侧、配色和字体层级。纵向索引（`index`）用编号引导阅读；对照矩阵（`matrix`）用明确的行列维度比较对象；分组结构（`grouped`）用分类与子项表达归属。矩阵和分组不使用右侧编号或连接线。复用 `templates/assets/decoration.png`，不调用图像生成。文字溢出时报错，需调整文案再渲染。
+
+   在 analysis.json 中设置 `layout` 并填写对应数据，格式见 [布局约定](<CONTRACT.md#右侧布局>)。也可用 `--layout` 覆盖选择，但必须提供所选布局的数据，不会自动把章节大纲转换为对照表或分组。现有样图使用不同文章：
+
+   ```powershell
+   uv run scripts/render_cover.py --analysis work/lect07/analysis.json --output "Assets/需求和架构 (2)/cover.png" --html work/lect07/cover.html
+   uv run scripts/render_cover.py --analysis work/lect09/analysis.json --output "Assets/DeepSeek Harness/cover.png" --html work/lect09/cover.html
+   ```
 
 4. 组装文章。
 
@@ -59,7 +66,9 @@ uv run playwright install chromium
 
 - 整理后的文章：`articles/软件工程的来龙去脉.md`
 - 封面：`Assets/软件工程的来龙去脉/cover.png`
-- 原文、原始 HTML、分析、元数据与封面预览：`work/lect05/`
+- 对照矩阵：[第 7 讲「需求和架构 (2)」](<Assets/需求和架构 (2)/cover.png>)
+- 分组结构：[第 9 讲「DeepSeek Harness」](<Assets/DeepSeek Harness/cover.png>)
+- 原文、原始 HTML、分析、元数据与封面预览：`work/lect05/`、`work/lect07/`、`work/lect09/`
 
 ```powershell
 uv run python -m unittest discover -s tests -v
@@ -67,4 +76,15 @@ uv run python -m unittest discover -s tests -v
 
 测试覆盖转换时的代码、链接、表格、图片和 TeX 保留、下载失败处理、封面布局与溢出，以及第 5 讲快照的全文比对。封面测试需要已安装 Chromium，首次运行完整测试前须组装文章。
 
-模板装饰素材 `templates/assets/decoration.png` 由本项目提供，不据原站授权推定其许可。
+## 许可证
+
+本仓库按内容类型分别授权：
+
+| 范围 | 许可证 |
+| --- | --- |
+| 本项目代码、脚本、测试、HTML/CSS 模板实现、开发配置及开发文档 | [GNU GPL v3（GPL-3.0-only）](<LICENSE>) |
+| 文章正文、导读与分析文案、图片、装饰素材和生成封面等内容资源 | [CC BY-NC 4.0（署名—非商业性使用 4.0 国际）](<LICENSE-CC-BY-NC-4.0>) |
+
+文章和图片等资源采用与[原课程讲义](<https://jyywiki.cn/GSE/2026/>)相同的 CC BY-NC 4.0 协议，包括 `articles/`、`Assets/`、`templates/assets/` 中的资源，以及 `work/` 中保存的讲义与整理文案。使用这些资源时须保留署名、来源和许可证链接，注明修改，并遵守非商业性使用条件。原文版权归原作者所有；另有明确授权声明的第三方内容保留其原有授权。
+
+生成的 HTML 预览包含模板代码与文章、图片内容，两部分分别遵循上述许可证。第三方依赖遵循其各自的许可证。

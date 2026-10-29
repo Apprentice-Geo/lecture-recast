@@ -13,6 +13,7 @@ from playwright.sync_api import sync_playwright
 
 
 ROOT = Path(__file__).resolve().parents[1]
+LAYOUTS = ("index", "matrix", "grouped")
 ICONS = {
     "history": '<path d="M4 6c5-2 8-1 12 1v22c-4-2-7-3-12-1zM28 6c-5-2-8-1-12 1v22c4-2 7-3 12-1z"/>',
     "tools": '<path d="M28 5a9 9 0 0 1-11 11L8 27a4 4 0 0 1-5-5l11-9A9 9 0 0 1 25 2l-6 6 5 5z"/>',
@@ -20,10 +21,13 @@ ICONS = {
 }
 
 
-def validate_analysis(data: object) -> dict:
+def validate_analysis(data: object, layout: str | None = None) -> dict:
     """Reject incomplete outlines before they produce plausible blank covers."""
     if not isinstance(data, dict):
         raise ValueError("analysis.json 必须是对象")
+    layout = layout or data.get("layout", "index")
+    if layout not in LAYOUTS:
+        raise ValueError("layout 必须是 index、matrix 或 grouped")
 
     def text_field(item: dict, field: str, location: str) -> None:
         if not isinstance(item.get(field), str) or not item[field].strip():
@@ -33,7 +37,7 @@ def validate_analysis(data: object) -> dict:
         text_field(data, key, "analysis")
     if type(data.get("lecture")) is not int or data["lecture"] < 1:
         raise ValueError("lecture 必须是正整数")
-    for key, low, high in (("keywords", 2, 4), ("highlights", 3, 3), ("sections", 4, 7)):
+    for key, low, high in (("keywords", 2, 4), ("highlights", 3, 3)):
         if not isinstance(data.get(key), list) or not low <= len(data[key]) <= high:
             raise ValueError(f"{key} 必须包含 {low}–{high} 项")
     if any(not isinstance(k, str) or not k.strip() for k in data["keywords"]):
@@ -45,18 +49,46 @@ def validate_analysis(data: object) -> dict:
             text_field(item, key, f"highlights[{i}]")
         if not isinstance(item.get("icon"), str) or item["icon"] not in ICONS:
             raise ValueError(f"highlights[{i}].icon 必须是 history、tools 或 future")
-    for i, item in enumerate(data["sections"]):
-        if not isinstance(item, dict):
-            raise ValueError(f"sections[{i}] 必须是对象")
-        for key in ("title", "summary"):
-            text_field(item, key, f"sections[{i}]")
-        points = item.get("points")
-        if not isinstance(points, list) or not points or any(not isinstance(p, str) or not p.strip() for p in points):
-            raise ValueError(f"sections[{i}].points 必须是非空字符串列表")
+    def objects(value, name, low, high):
+        if not isinstance(value, list) or not low <= len(value) <= high:
+            raise ValueError(f"{name} 必须包含 {low}–{high} 项")
+        for i, item in enumerate(value):
+            if not isinstance(item, dict):
+                raise ValueError(f"{name}[{i}] 必须是对象")
+            for key in ("title", "summary"):
+                text_field(item, key, f"{name}[{i}]")
+
+    if layout == "index":
+        objects(data.get("sections"), "sections", 4, 7)
+        for i, item in enumerate(data["sections"]):
+            points = item.get("points")
+            if not isinstance(points, list) or not points or any(not isinstance(p, str) or not p.strip() for p in points):
+                raise ValueError(f"sections[{i}].points 必须是非空字符串列表")
+    else:
+        for key in ("structure_title", "structure_summary"):
+            text_field(data, key, "analysis")
+    if layout == "matrix":
+        matrix = data.get("matrix")
+        if not isinstance(matrix, dict):
+            raise ValueError("matrix 必须包含 columns 和 rows")
+        columns = matrix.get("columns")
+        if not isinstance(columns, list) or not 3 <= len(columns) <= 4 or any(not isinstance(c, str) or not c.strip() for c in columns):
+            raise ValueError("matrix.columns 必须包含 3–4 个非空列名（首列为比较对象）")
+        objects(matrix.get("rows"), "matrix.rows", 3, 6)
+        for i, row in enumerate(matrix["rows"]):
+            cells = row.get("cells")
+            if not isinstance(cells, list) or len(cells) != len(columns) - 1 or any(not isinstance(c, str) or not c.strip() for c in cells):
+                raise ValueError(f"matrix.rows[{i}].cells 必须与比较维度列数一致，且为非空字符串")
+    elif layout == "grouped":
+        groups = data.get("groups")
+        objects(groups, "groups", 2, 4)
+        for i, group in enumerate(groups):
+            objects(group.get("items"), f"groups[{i}].items", 2, 4)
     return data
 
 
-def build_html(data: dict) -> str:
+def build_html(data: dict, layout: str | None = None) -> str:
+    layout = layout or data.get("layout", "index")
     escape = html.escape
     template = (ROOT / "templates" / "cover.html").read_text(encoding="utf-8")
     decoration = base64.b64encode((ROOT / "templates" / "assets" / "decoration.png").read_bytes()).decode("ascii")
@@ -70,15 +102,58 @@ def build_html(data: dict) -> str:
         + '</div></div></div>'
         for item in data["highlights"]
     )
-    sections = "".join(
-        f'<section class="section" data-check><div class="number">{i:02d}</div>'
-        f'<div class="section-text"><h2 class="section-title" data-check>{escape(item["title"])}</h2>'
-        f'<p class="section-summary" data-check>{escape(item["summary"])}</p></div>'
-        '<ul class="points" data-check>'
-        + "".join(f'<li data-check>{escape(p)}</li>' for p in item["points"])
-        + '</ul></section>'
-        for i, item in enumerate(data["sections"], 1)
+
+    def section_html(i, item):
+        return (
+            f'<section class="section" data-check data-boundary><div class="number">{i:02d}</div>'
+            f'<div class="section-text"><h2 class="section-title" data-check>{escape(item["title"])}</h2>'
+            f'<p class="section-summary" data-check>{escape(item["summary"])}</p></div>'
+            '<ul class="points" data-check>'
+            + "".join(f'<li data-check>{escape(p)}</li>' for p in item["points"])
+            + '</ul></section>'
+        )
+
+    structure_header = (
+        '<header class="structure-header" data-check data-boundary>'
+        f'<h2 data-check>{escape(data.get("structure_title", ""))}</h2>'
+        f'<p data-check>{escape(data.get("structure_summary", ""))}</p></header>'
     )
+    count, columns = 0, 0
+    if layout == "index":
+        count = len(data["sections"])
+        content = "".join(section_html(i, item) for i, item in enumerate(data["sections"], 1))
+    elif layout == "matrix":
+        matrix = data["matrix"]
+        count, columns = len(matrix["rows"]), len(matrix["columns"])
+        content = structure_header + '<div class="comparison" role="table" data-check data-boundary>'
+        content += '<div class="comparison-head" role="row" data-check data-boundary>'
+        content += "".join(f'<div role="columnheader" data-check>{escape(c)}</div>' for c in matrix["columns"])
+        content += '</div>'
+        for row in matrix["rows"]:
+            content += (
+                '<div class="comparison-row" role="row" data-check data-boundary>'
+                f'<div class="comparison-label" role="rowheader" data-check><h3 data-check>{escape(row["title"])}</h3>'
+                f'<p data-check>{escape(row["summary"])}</p></div>'
+                + "".join(f'<div class="comparison-cell" role="cell" data-check>{escape(c)}</div>' for c in row["cells"])
+                + '</div>'
+            )
+        content += '</div>'
+    else:
+        count = len(data["groups"])
+        content = structure_header + '<div class="clusters" data-check data-boundary>'
+        for group in data["groups"]:
+            content += (
+                f'<section class="cluster" style="--item-count:{len(group["items"])}" data-check data-boundary>'
+                f'<header class="cluster-heading" data-check data-boundary><h3 data-check>{escape(group["title"])}</h3>'
+                f'<p data-check>{escape(group["summary"])}</p></header>'
+                '<div class="cluster-items" data-check data-boundary>'
+                + "".join(
+                    f'<div class="cluster-item" data-check data-boundary><h4 data-check>{escape(item["title"])}</h4>'
+                    f'<p data-check>{escape(item["summary"])}</p></div>' for item in group["items"]
+                )
+                + '</div></section>'
+            )
+        content += '</div>'
     values = {
         "TITLE": escape(data["title"]),
         "LECTURE": f'{data["lecture"]:02d}',
@@ -86,8 +161,10 @@ def build_html(data: dict) -> str:
         "SUMMARY": escape(data["summary"]),
         "KEYWORDS": "".join(f"<span>{escape(k)}</span>" for k in data["keywords"]),
         "HIGHLIGHTS": highlights,
-        "COUNT": str(len(data["sections"])),
-        "SECTIONS": sections,
+        "COUNT": str(count),
+        "LAYOUT": layout,
+        "COLUMNS": str(columns),
+        "CONTENT": content,
         "DECORATION": "data:image/png;base64," + decoration,
     }
     return re.sub(r"%%([A-Z]+)%%", lambda match: values[match[1]], template)
@@ -103,11 +180,12 @@ CHECK_OVERFLOW = """() => {
       errors.push(`文字超出容器 ${label}`);
     if (r.left < box.left - 1 || r.top < box.top - 1 || r.right > box.right + 1 || r.bottom > box.bottom + 1)
       errors.push(`超出画布 ${label}`);
-    const section = el.closest('.section');
-    if (section && el !== section) {
-      const s = section.getBoundingClientRect();
-      if (r.bottom > s.bottom + 1 || r.right > s.right + 1)
-        errors.push(`超出索引行 ${label}`);
+    let boundary = el.parentElement.closest('[data-boundary]');
+    while (boundary) {
+      const s = boundary.getBoundingClientRect();
+      if (r.bottom > s.bottom + 1 || r.right > s.right + 1 || r.left < s.left - 1 || r.top < s.top - 1)
+        errors.push(`超出信息区域 ${label}`);
+      boundary = boundary.parentElement.closest('[data-boundary]');
     }
   }
   const intro = document.querySelector('.intro-copy').getBoundingClientRect();
@@ -117,9 +195,10 @@ CHECK_OVERFLOW = """() => {
 }"""
 
 
-def render(analysis: Path, output: Path, preview: Path | None = None) -> None:
-    data = validate_analysis(json.loads(analysis.read_text(encoding="utf-8-sig")))
-    document = build_html(data)
+def render(analysis: Path, output: Path, preview: Path | None = None, layout: str | None = None) -> None:
+    data = validate_analysis(json.loads(analysis.read_text(encoding="utf-8-sig")), layout)
+    layout = layout or data.get("layout", "index")
+    document = build_html(data, layout)
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch()
         try:
@@ -145,9 +224,10 @@ def main() -> None:
     parser.add_argument("--analysis", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--html", type=Path, help="可选：保存包含内嵌装饰图的 HTML 预览")
+    parser.add_argument("--layout", choices=LAYOUTS, help="右侧布局；覆盖 analysis.json 的 layout，默认 index")
     args = parser.parse_args()
     try:
-        render(args.analysis, args.output, args.html)
+        render(args.analysis, args.output, args.html, args.layout)
     except (OSError, ValueError) as error:
         parser.exit(1, f"{error}\n")
     print(f"封面已生成：{args.output} (1600×1200)")
