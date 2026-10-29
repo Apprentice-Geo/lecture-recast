@@ -1,0 +1,27 @@
+{
+  "title": "提示词与上下文工程",
+  "url": "https://jyywiki.cn/GSE/2026/lect2.md",
+  "author": "蒋炎岩（Yanyan Jiang）",
+  "license": {
+    "name": "CC BY-NC 4.0",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "article_name": "提示词与上下文工程",
+  "lecture": 2,
+  "source_file": "work/lect02/source.md",
+  "publish_file": "articles/提示词与上下文工程.md",
+  "assets_dir": "Assets/提示词与上下文工程",
+  "reading_minutes": 16,
+  "reading_units": 6394,
+  "reading_method": "中文逐字及英文单词计数，按每分钟 400 单位估算，不含 Agent 导读",
+  "fetched_at": "2026-10-29T14:15:12.222546+00:00",
+  "images": [],
+  "body_counts": {
+    "h1": 1,
+    "h2": 10,
+    "p": 68,
+    "pre": 0,
+    "img": 0,
+    "table": 0
+  }
+}

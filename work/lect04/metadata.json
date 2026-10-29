@@ -1,0 +1,27 @@
+{
+  "title": "版本管理 (2)",
+  "url": "https://jyywiki.cn/GSE/2026/lect4.md",
+  "author": "蒋炎岩（Yanyan Jiang）",
+  "license": {
+    "name": "CC BY-NC 4.0",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "article_name": "版本管理 (2)",
+  "lecture": 4,
+  "source_file": "work/lect04/source.md",
+  "publish_file": "articles/版本管理 (2).md",
+  "assets_dir": "Assets/版本管理 (2)",
+  "reading_minutes": 18,
+  "reading_units": 6941,
+  "reading_method": "中文逐字及英文单词计数，按每分钟 400 单位估算，不含 Agent 导读",
+  "fetched_at": "2026-10-29T14:15:11.657516+00:00",
+  "images": [],
+  "body_counts": {
+    "h1": 1,
+    "h2": 9,
+    "p": 60,
+    "pre": 1,
+    "img": 0,
+    "table": 0
+  }
+}

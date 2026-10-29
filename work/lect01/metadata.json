@@ -1,0 +1,27 @@
+{
+  "title": "欢迎来到未来",
+  "url": "https://jyywiki.cn/GSE/2026/lect1.md",
+  "author": "蒋炎岩（Yanyan Jiang）",
+  "license": {
+    "name": "CC BY-NC 4.0",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "article_name": "欢迎来到未来",
+  "lecture": 1,
+  "source_file": "work/lect01/source.md",
+  "publish_file": "articles/欢迎来到未来.md",
+  "assets_dir": "Assets/欢迎来到未来",
+  "reading_minutes": 15,
+  "reading_units": 5668,
+  "reading_method": "中文逐字及英文单词计数，按每分钟 400 单位估算，不含 Agent 导读",
+  "fetched_at": "2026-10-29T14:14:58.498486+00:00",
+  "images": [],
+  "body_counts": {
+    "h1": 1,
+    "h2": 9,
+    "p": 55,
+    "pre": 0,
+    "img": 0,
+    "table": 0
+  }
+}
