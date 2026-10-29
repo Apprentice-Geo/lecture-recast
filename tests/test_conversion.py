@@ -3,10 +3,29 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from fetch_article import convert_article, reading_minutes, markdown_destination
+from fetch_article import convert_article, course_title, reading_minutes, markdown_destination
 
 
 class ConversionTests(unittest.TestCase):
+    def test_course_title_preserves_part_number_and_source_heading(self):
+        url = "https://jyywiki.cn/GSE/2026/lect3.md"
+        for href in ("lect3.md", "/GSE/2026/lect3.md", url):
+            with self.subTest(href=href):
+                title = course_title('<nav><a href="lect3.md">导航文字</a></nav>'
+                                     '<div class="wiki"><h1>课程</h1>'
+                                     f'<a href="{href}">版本管理 (1)</a></div>', url)
+                self.assertEqual(title, "版本管理 (1)")
+                markdown, source_title, *_ = convert_article(
+                    '<div class="wiki"><h1>版本管理</h1><p>正文</p></div>',
+                    url, title, lambda *args: None)
+                self.assertEqual(source_title, "版本管理")
+                self.assertTrue(markdown.startswith("# 版本管理\n"))
+
+    def test_missing_course_title_is_reported(self):
+        with self.assertRaisesRegex(ValueError, "课程目录"):
+            course_title('<div class="wiki"><h1>课程</h1></div>',
+                         'https://jyywiki.cn/GSE/2026/lect3.md')
+
     def convert(self, fragment, download=lambda url, name: None):
         return convert_article(f'<nav>不要抓取导航</nav><div class="wiki"><h1>测试文章</h1>{fragment}</div>',
                                "https://jyywiki.cn/GSE/2026/lect5.md", "测试文章", download)

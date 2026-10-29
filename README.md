@@ -27,6 +27,8 @@ uv run playwright install chromium
 
    生成 `work/lect05/source.html`、`source.md`、`metadata.json`，下载正文图片到 `Assets/<文章名称>/`。页面虽然以 `.md` 结尾，但返回 HTML；只转换 `.wiki` 正文，不纳入导航和站点页脚。下载失败直接报错，不静默丢图。
 
+   发布标题以课程目录为准，完整保留分讲括注；原文部分保留正文自身的标题。例如第 3 讲发布为「版本管理 (1)」，正文标题仍为「版本管理」。
+
    已有原始 HTML 时可重新转换（正文图片仍会下载）：
 
    ```powershell
@@ -68,7 +70,7 @@ uv run playwright install chromium
 | --- | --- | --- | --- |
 | 1 | [欢迎来到未来](<articles/欢迎来到未来.md>) | [PNG](<Assets/欢迎来到未来/cover.png>) | 索引：从能力变化、工具组合到工程反馈 |
 | 2 | [提示词与上下文工程](<articles/提示词与上下文工程.md>) | [PNG](<Assets/提示词与上下文工程/cover.png>) | 分组：任务表达、方法积累、长程探索 |
-| 3 | [版本管理](<articles/版本管理.md>) | [PNG](<Assets/版本管理/cover.png>) | 索引：快照、操作、提交、交付与并发 |
+| 3 | [版本管理 (1)](<articles/版本管理 (1).md>) | [PNG](<Assets/版本管理 (1)/cover.png>) | 索引：快照、操作、提交、交付与并发 |
 | 4 | [版本管理 (2)](<articles/版本管理 (2).md>) | [PNG](<Assets/版本管理 (2)/cover.png>) | 索引：制品关系、变化身份、协作与 MVP |
 | 5 | [软件工程的来龙去脉](<articles/软件工程的来龙去脉.md>) | [PNG](<Assets/软件工程的来龙去脉/cover.png>) | 索引：保留此前完成的成果 |
 | 6 | [需求和架构 (1)](<articles/需求和架构 (1).md>) | [PNG](<Assets/需求和架构 (1)/cover.png>) | 分组：计算表示、历史依据、业务职责 |
