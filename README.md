@@ -15,7 +15,7 @@ uv sync
 uv run playwright install chromium
 ```
 
-依赖记录在 `pyproject.toml` 和 `uv.lock` 中。模板使用系统字体（优先微软雅黑、苹方、思源黑体），跨系统字形与换行可能略有差异。
+依赖记录在 `pyproject.toml` 和 `uv.lock` 中。封面统一使用仓库内置的思源黑体（Source Han Sans SC）可变字体，无需安装系统字体。主标题使用 800 字重，章节与分组标题、讲次数字使用 700，次级标题、标签与条目编号使用 500–600，正文使用 400。
 
 ## 工作流
 
@@ -35,7 +35,7 @@ uv run playwright install chromium
 
 2. 让 Agent 完整阅读 `source.md`，按 CONTRACT.md 格式编辑同目录下的 `analysis.json`。第 5 讲已经完成。重新抓取后应重新核对分析，脚本不会自动更新它。
 
-3. 根据分析渲染封面。`--html` 可选，保存内嵌装饰图的独立预览。
+3. 根据分析渲染封面。`--html` 可选，保存内嵌装饰图的 HTML 预览；字体通过相对路径引用 `templates/assets/fonts/`，离线查看时需保留仓库目录结构。
 
    ```powershell
    uv run scripts/render_cover.py --analysis work/lect05/analysis.json --output Assets/软件工程的来龙去脉/cover.png --html work/lect05/cover.html
@@ -95,7 +95,10 @@ uv run python -m unittest discover -s tests -v
 | --- | --- |
 | 本项目代码、脚本、测试、HTML/CSS 模板实现、开发配置及开发文档 | [GNU GPL v3（GPL-3.0-only）](<LICENSE>) |
 | 文章正文、导读与分析文案、图片、装饰素材和生成封面等内容资源 | [CC BY-NC 4.0（署名—非商业性使用 4.0 国际）](<LICENSE-CC-BY-NC-4.0>) |
+| 第三方思源黑体字体文件 | [SIL Open Font License 1.1](<templates/assets/fonts/source-han-sans/LICENSE.txt>)（保留原授权） |
 
-文章和图片等资源采用与[原课程讲义](<https://jyywiki.cn/GSE/2026/>)相同的 CC BY-NC 4.0 协议，包括 `articles/`、`Assets/`、`templates/assets/` 中的资源，以及 `work/` 中保存的讲义与整理文案。使用这些资源时须保留署名、来源和许可证链接，注明修改，并遵守非商业性使用条件。原文版权归原作者所有；另有明确授权声明的第三方内容保留其原有授权。
+文章和图片等资源采用与[原课程讲义](<https://jyywiki.cn/GSE/2026/>)相同的 CC BY-NC 4.0 协议，包括 `articles/`、`Assets/`、`templates/assets/` 中除第三方字体外的资源，以及 `work/` 中保存的讲义与整理文案。使用这些资源时须保留署名、来源和许可证链接，注明修改，并遵守非商业性使用条件。原文版权归原作者所有；另有明确授权声明的第三方内容保留其原有授权。
 
-生成的 HTML 预览包含模板代码与文章、图片内容，两部分分别遵循上述许可证。第三方依赖遵循其各自的许可证。
+内置字体为 Adobe [思源黑体（Source Han Sans）](<https://github.com/adobe-fonts/source-han-sans>)官方发布的简体中文可变字体 `SourceHanSansSC-VF.otf.woff2`，未经修改，保存在 `templates/assets/fonts/source-han-sans/`。字体及原始许可证取自[上游固定提交](<https://github.com/adobe-fonts/source-han-sans/tree/a4f7cf94edfb9d7ffbdfc4841de276358bd7e0f2>)，版权为 Copyright 2014–2025 Adobe，保留字体名称为 “Source”。字体继续遵循 SIL Open Font License 1.1，不改为本项目的 GPL 或 CC 协议；原始版权声明和许可证全文随字体保留在 [LICENSE.txt](<templates/assets/fonts/source-han-sans/LICENSE.txt>) 中。使用该字体生成的封面仍按本项目的内容资源授权。
+
+生成的 HTML 预览包含模板代码与文章、图片内容，分别遵循上述许可证；引用的字体保留其原授权。第三方依赖遵循其各自的许可证。
