@@ -40,6 +40,7 @@ def build_publish(work):
         f'# {metadata["title"]}', "",
         f'> 原文作者：{metadata["author"]}。来源：[生成式软件工程（2026）第 {metadata["lecture"]} 讲]({metadata["url"]})。',
         f'> 原站标注 [{license_info["name"]}]({license_info["url"]}) 授权。本文为非商业转载整理，仅做格式转换，正文未作改写；以下导读和封面由 Agent 整理，不属于原文。',
+        '> 处理工具和处理后的文字原稿已开源至 [lecture-recast](<https://github.com/Apprentice-Geo/lecture-recast>)。',
         "", f'![文章脉络封面]({cover_ref})', "",
         f'预计阅读原文约 **{metadata["reading_minutes"]} 分钟**（{metadata["reading_method"]}）。', "",
         "## 阅读导航（Agent 整理）", "", analysis["summary"], "",
