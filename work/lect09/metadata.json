@@ -1,0 +1,27 @@
+{
+  "title": "DeepSeek Harness",
+  "url": "https://jyywiki.cn/GSE/2026/lect9.md",
+  "author": "蒋炎岩（Yanyan Jiang）",
+  "license": {
+    "name": "CC BY-NC 4.0",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "article_name": "DeepSeek Harness",
+  "lecture": 9,
+  "source_file": "work/lect09/source.md",
+  "publish_file": "articles/DeepSeek Harness.md",
+  "assets_dir": "Assets/DeepSeek Harness",
+  "reading_minutes": 20,
+  "reading_units": 7887,
+  "reading_method": "中文逐字及英文单词计数，按每分钟 400 单位估算，不含 Agent 导读",
+  "fetched_at": "2026-10-29T13:05:00.506434+00:00",
+  "images": [],
+  "body_counts": {
+    "h1": 1,
+    "h2": 13,
+    "p": 80,
+    "pre": 1,
+    "img": 0,
+    "table": 0
+  }
+}

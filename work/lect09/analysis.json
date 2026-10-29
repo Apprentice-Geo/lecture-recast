@@ -1,0 +1,44 @@
+{
+  "title": "DeepSeek Harness",
+  "lecture": 9,
+  "layout": "grouped",
+  "subtitle": "让一个 Agent 循环，\n承载持续变化的需求",
+  "summary": "一个小型 Agent 循环能完成演示，真实工作却还需要恢复、协作与持续扩展。这一讲以 DeepSeek Harness 为例，讨论怎样通过共同对象和插件接口组织复杂性，并让 Bot、已有应用与生成式界面在同一套基础能力上生长。",
+  "keywords": ["共同对象", "插件协同", "执行边界", "应用扩展"],
+  "highlights": [
+    {"title": "从需求出发", "description": "把中断、恢复与变化纳入设计", "icon": "history"},
+    {"title": "组织协作", "description": "共同对象与明确的插件接口", "icon": "tools"},
+    {"title": "开放扩展", "description": "在实际使用中试错与生长", "icon": "future"}
+  ],
+  "structure_title": "围绕共同接口组织一个 Harness",
+  "structure_summary": "从核心概念、协作约定到扩展方向，理解这套系统。",
+  "groups": [
+    {
+      "title": "共同对象",
+      "summary": "插件共同理解的领域概念",
+      "items": [
+        {"title": "Session", "summary": "保存有序事件，通过投影得到模型消息、业务状态与界面表示。"},
+        {"title": "Agent", "summary": "接收后续输入、补充上下文或中途引导，并推动实际执行。"},
+        {"title": "Slots", "summary": "为界面预留扩展位置，让插件贡献按钮、面板与其他组件。"}
+      ]
+    },
+    {
+      "title": "协作规则",
+      "summary": "让局部扩展能够共同工作",
+      "items": [
+        {"title": "服务与生命周期", "summary": "解析服务、激活依赖，管理作用域，并在卸载时撤销注册。"},
+        {"title": "事实与决策", "summary": "事件记录已经发生的事实；执行前的 Hook 参与下一步决策。"},
+        {"title": "组合与边界", "summary": "明确顺序、职责和冲突处理，防止局部合理叠加成整体失控。"}
+      ]
+    },
+    {
+      "title": "应用扩展",
+      "summary": "复用基础能力形成新用途",
+      "items": [
+        {"title": "Bot 协作", "summary": "为不同用途配置助手，组织定时例程与角色之间的通信。"},
+        {"title": "已有 App 增强", "summary": "锁定选定对象、序列化数据，通过受约束的工具完成编辑。"},
+        {"title": "GenUI", "summary": "把界面操作和当前状态送回会话，让交互成为对话的一部分。"}
+      ]
+    }
+  ]
+}
