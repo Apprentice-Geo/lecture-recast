@@ -6,13 +6,16 @@ import argparse
 import base64
 import html
 import json
+import os
 from pathlib import Path
 import re
+from urllib.parse import quote
 
 from playwright.sync_api import sync_playwright
 
 
 ROOT = Path(__file__).resolve().parents[1]
+FONT_PATH = ROOT / "templates" / "assets" / "fonts" / "source-han-sans" / "SourceHanSansSC-VF.otf.woff2"
 LAYOUTS = ("index", "matrix", "grouped")
 ICONS = {
     "history": '<path d="M4 6c5-2 8-1 12 1v22c-4-2-7-3-12-1zM28 6c-5-2-8-1-12 1v22c4-2 7-3 12-1z"/>',
@@ -87,7 +90,7 @@ def validate_analysis(data: object, layout: str | None = None) -> dict:
     return data
 
 
-def build_html(data: dict, layout: str | None = None) -> str:
+def build_html(data: dict, layout: str | None = None, *, font_url: str | None = None) -> str:
     layout = layout or data.get("layout", "index")
     escape = html.escape
     template = (ROOT / "templates" / "cover.html").read_text(encoding="utf-8")
@@ -166,6 +169,7 @@ def build_html(data: dict, layout: str | None = None) -> str:
         "COLUMNS": str(columns),
         "CONTENT": content,
         "DECORATION": "data:image/png;base64," + decoration,
+        "FONT": escape(font_url) if font_url else "data:font/woff2;base64," + base64.b64encode(FONT_PATH.read_bytes()).decode("ascii"),
     }
     return re.sub(r"%%([A-Z]+)%%", lambda match: values[match[1]], template)
 
@@ -205,6 +209,9 @@ def render(analysis: Path, output: Path, preview: Path | None = None, layout: st
             page = browser.new_page(viewport={"width": 1600, "height": 1200}, device_scale_factor=1)
             page.set_content(document, wait_until="load")
             page.evaluate("document.fonts.ready")
+            font_statuses = page.evaluate("() => Array.from(document.fonts, font => font.status)")
+            if not font_statuses or any(status != "loaded" for status in font_statuses):
+                raise ValueError("思源黑体加载失败")
             if not page.locator(".decoration").evaluate("img => img.complete && img.naturalWidth > 0"):
                 raise ValueError("装饰图加载失败")
             errors = page.evaluate(CHECK_OVERFLOW)
@@ -216,14 +223,18 @@ def render(analysis: Path, output: Path, preview: Path | None = None, layout: st
             browser.close()
     if preview:
         preview.parent.mkdir(parents=True, exist_ok=True)
-        preview.write_text(document, encoding="utf-8")
+        try:
+            font_url = quote(Path(os.path.relpath(FONT_PATH, preview.resolve().parent)).as_posix())
+        except ValueError:  # Windows cannot form a relative path across drives.
+            font_url = FONT_PATH.as_uri()
+        preview.write_text(build_html(data, layout, font_url=font_url), encoding="utf-8")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--analysis", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--html", type=Path, help="可选：保存包含内嵌装饰图的 HTML 预览")
+    parser.add_argument("--html", type=Path, help="可选：保存内嵌装饰图、引用仓库字体的 HTML 预览")
     parser.add_argument("--layout", choices=LAYOUTS, help="右侧布局；覆盖 analysis.json 的 layout，默认 index")
     args = parser.parse_args()
     try:
