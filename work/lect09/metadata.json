@@ -14,7 +14,7 @@
   "reading_minutes": 20,
   "reading_units": 7887,
   "reading_method": "中文逐字及英文单词计数，按每分钟 400 单位估算，不含 Agent 导读",
-  "fetched_at": "2026-10-29T13:05:00.506434+00:00",
+  "fetched_at": "2026-10-29T14:15:10.751565+00:00",
   "images": [],
   "body_counts": {
     "h1": 1,

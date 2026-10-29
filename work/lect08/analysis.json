@@ -1,0 +1,32 @@
+{
+  "title": "Agent Native 开发",
+  "lecture": 8,
+  "layout": "grouped",
+  "subtitle": "把工程知识放进环境，\n让每次尝试获得反馈",
+  "summary": "Agent Native 开发需要为 Agent 设计能够持续工作、验证与修正的环境。这一讲从 Ralph Loop 的状态迁移出发，把 CI/CD、执行流程与独立验收接入反馈循环，同时提醒我们：局部清理不能替代架构调整，测试通过也不能代替真实需求的检验。",
+  "keywords": ["状态迁移", "检查与准入", "独立验收", "架构调整"],
+  "highlights": [
+    {"title": "让任务可接续", "description": "留下约束、证据与未决问题", "icon": "history"},
+    {"title": "让检查有约束力", "description": "失败阻止集成，并反馈修复方向", "icon": "tools"},
+    {"title": "让失败改变认识", "description": "检验需求，及时重想设计前提", "icon": "future"}
+  ],
+  "structure_title": "组织能够持续改进的开发环境",
+  "structure_summary": "可恢复的状态、有效的反馈与独立的判断共同支撑循环。",
+  "groups": [
+    {"title": "工作状态", "summary": "下一轮能够恢复判断", "items": [
+      {"title": "Ralph Loop", "summary": "同一提示词面对不断变化的工作区；循环仍需停止条件。"},
+      {"title": "知识外部化", "summary": "保存设计理由、测试证据和待办，让新会话找到可靠起点。"},
+      {"title": "直接观察", "summary": "让 Agent 启动应用、操作界面并查看日志，缩短反馈路径。"}
+    ]},
+    {"title": "检查与流程", "summary": "把必要工序落实到执行机制", "items": [
+      {"title": "CI/CD", "summary": "检查组合结果，约束失败时的合并与发布，防止旧产物覆盖。"},
+      {"title": "混合工作流", "summary": "固定步骤由程序执行，需要理解和选择的步骤交给 Agent。"},
+      {"title": "可执行反馈", "summary": "说明违规位置和修复方向；实现者不能单方面降低验收标准。"}
+    ]},
+    {"title": "验证与学习", "summary": "检查通过之外继续检验假设", "items": [
+      {"title": "任务可分性", "summary": "用可信参照和可缩小的失败集合，支持相互独立的修复。"},
+      {"title": "独立场景", "summary": "通过用户故事与外部服务替身检验行为，并核对替身的差异。"},
+      {"title": "架构与需求", "summary": "局部清理无法挽救失效前提，真实使用应推动重构和重新判断。"}
+    ]}
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "title": "需求和架构 (1)",
+  "url": "https://jyywiki.cn/GSE/2026/lect6.md",
+  "author": "蒋炎岩（Yanyan Jiang）",
+  "license": {
+    "name": "CC BY-NC 4.0",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "article_name": "需求和架构 (1)",
+  "lecture": 6,
+  "source_file": "work/lect06/source.md",
+  "publish_file": "articles/需求和架构 (1).md",
+  "assets_dir": "Assets/需求和架构 (1)",
+  "reading_minutes": 22,
+  "reading_units": 8623,
+  "reading_method": "中文逐字及英文单词计数，按每分钟 400 单位估算，不含 Agent 导读",
+  "fetched_at": "2026-10-29T14:15:12.508554+00:00",
+  "images": [],
+  "body_counts": {
+    "h1": 1,
+    "h2": 13,
+    "p": 84,
+    "pre": 1,
+    "img": 0,
+    "table": 0
+  }
+}
