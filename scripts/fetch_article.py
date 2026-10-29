@@ -15,6 +15,7 @@ from markdownify import MarkdownConverter
 
 ROOT = Path(__file__).resolve().parents[1]
 LICENSE_URL = "https://creativecommons.org/licenses/by-nc/4.0/"
+COURSE_URL = "https://jyywiki.cn/GSE/2026/"
 
 
 def safe_name(value):
@@ -57,6 +58,15 @@ def article_body(html):
     for tag in body.select("script:not([type^='math/tex']), style, nav"):
         tag.decompose()
     return body
+
+
+def course_title(html, article_url):
+    for link in article_body(html).find_all("a", href=True):
+        if urljoin(COURSE_URL, link["href"]) == article_url:
+            title = link.get_text(strip=True)
+            if title:
+                return title
+    raise ValueError(f"课程目录中未找到讲义标题：{article_url}")
 
 
 def protect_math(body):
@@ -156,18 +166,27 @@ def main():
             url = str(response.url)
         (work / "source.html").write_bytes(raw)
         html = raw.decode("utf-8-sig")
-        name = safe_name(article_body(html).h1.get_text(strip=True))
+        source_title = article_body(html).h1.get_text(strip=True)
+        title_url = url
+        title = source_title
+        if not args.url:
+            response = client.get(COURSE_URL)
+            response.raise_for_status()
+            title = course_title(response.text, url)
+            title_url = COURSE_URL
+        name = safe_name(title)
         assets = ROOT / "Assets" / name
         assets.mkdir(parents=True, exist_ok=True)
         def download(image_url, filename):
             response = client.get(image_url)
             response.raise_for_status()
             (assets / filename).write_bytes(response.content)
-        markdown, title, text, images, stats = convert_article(html, url, name, download)
+        markdown, source_title, text, images, stats = convert_article(html, url, name, download)
     minutes, units = reading_minutes(text)
     (work / "source.md").write_text(markdown, encoding="utf-8")
     metadata = {
-        "title": title, "url": url, "author": "蒋炎岩（Yanyan Jiang）",
+        "title": title, "source_title": source_title, "title_url": title_url,
+        "url": url, "author": "蒋炎岩（Yanyan Jiang）",
         "license": {"name": "CC BY-NC 4.0", "url": LICENSE_URL},
         "article_name": name, "lecture": args.lecture,
         "source_file": (work / "source.md").relative_to(ROOT).as_posix(),

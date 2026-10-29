@@ -100,6 +100,8 @@ UTF-8 JSON；左侧信息共用，右侧支持纵向索引、网格矩阵和分�
 
 抓取脚本生成 metadata.json，至少包含 `title`、`url`、`author`、`license`、`article_name`、`source_file`、`publish_file`、`assets_dir`、`reading_minutes`、`fetched_at`、`images`。文件路径相对于仓库根目录。
 
+默认课程抓取以课程目录中的完整标题为准，保留 `(1)`、`(2)` 等括注；文章主标题、文件名、资源目录和 `analysis.title` 使用该标题。`source_title` 记录正文原始标题，`title_url` 记录发布标题的来源。目录与正文标题不一致时，`source.html`、`source.md` 及发布文章的原文部分保留正文标题，不自行补写。使用 `--url` 抓取自定义页面时，标题取该页面正文的 h1。
+
 封面命令约定：
 
 ```powershell

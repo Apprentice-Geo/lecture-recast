@@ -15,14 +15,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class PublishTests(unittest.TestCase):
     def test_navigation_uses_selected_structure_and_preserves_source(self):
-        for lecture in (5, 7, 9):
+        for lecture in (3, 5, 7, 9):
             with self.subTest(lecture=lecture), tempfile.TemporaryDirectory() as folder:
                 root = Path(folder)
                 work = root / "work"
                 work.mkdir()
                 analysis = json.loads((ROOT / f"work/lect{lecture:02}/analysis.json").read_text(encoding="utf-8"))
                 (work / "analysis.json").write_text(json.dumps(analysis, ensure_ascii=False), encoding="utf-8")
-                source = f'# {analysis["title"]}\n\n保留原文段落与 `code`。\n'
+                source_title = "版本管理" if lecture == 3 else analysis["title"]
+                source = f'# {source_title}\n\n保留原文段落与 `code`。\n'
                 (work / "source.md").write_text(source, encoding="utf-8")
                 assets = root / "Assets/示例"
                 assets.mkdir(parents=True)
@@ -38,7 +39,8 @@ class PublishTests(unittest.TestCase):
                 with patch.object(build_publish, "ROOT", root):
                     output = build_publish.build_publish(work).read_text(encoding="utf-8")
                 self.assertTrue(output.endswith(source))
-                if lecture == 5:
+                self.assertTrue(output.startswith(f'# {analysis["title"]}\n'))
+                if lecture in (3, 5):
                     for section in analysis["sections"]:
                         self.assertIn(section["title"], output)
                 elif lecture == 7:
