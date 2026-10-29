@@ -4,7 +4,7 @@
 
 项目文章来源于蒋炎岩的[生成式软件工程（GSE/2026）课程讲义](<https://jyywiki.cn/GSE/2026/>)，原站标注 [CC BY-NC 4.0](<https://creativecommons.org/licenses/by-nc/4.0/>)。整理后的文章保留作者、来源链接和授权说明。
 
-第 5 讲「软件工程的来龙去脉」已完成文章整理；第 7 讲与第 9 讲提供对照矩阵和分组封面样例。目录与数据格式见 [CONTRACT.md](<CONTRACT.md>)，开发命令与规范见 [AGENTS.md](<AGENTS.md>)。
+目录与数据格式见 [CONTRACT.md](<CONTRACT.md>)，开发命令与规范见 [AGENTS.md](<AGENTS.md>)。
 
 ## 安装
 
@@ -64,11 +64,22 @@ uv run playwright install chromium
 
 ## 结果与检查
 
-- 整理后的文章：`articles/软件工程的来龙去脉.md`
-- 封面：`Assets/软件工程的来龙去脉/cover.png`
-- 对照矩阵：[第 7 讲「需求和架构 (2)」](<Assets/需求和架构 (2)/cover.png>)
-- 分组结构：[第 9 讲「DeepSeek Harness」](<Assets/DeepSeek Harness/cover.png>)
-- 原文、原始 HTML、分析、元数据与封面预览：`work/lect05/`、`work/lect07/`、`work/lect09/`
+| 讲次 | 整理后的文章 | 封面 | 布局与内容关系 |
+| --- | --- | --- | --- |
+| 1 | [欢迎来到未来](<articles/欢迎来到未来.md>) | [PNG](<Assets/欢迎来到未来/cover.png>) | 索引：从能力变化、工具组合到工程反馈 |
+| 2 | [提示词与上下文工程](<articles/提示词与上下文工程.md>) | [PNG](<Assets/提示词与上下文工程/cover.png>) | 分组：任务表达、方法积累、长程探索 |
+| 3 | [版本管理](<articles/版本管理.md>) | [PNG](<Assets/版本管理/cover.png>) | 索引：快照、操作、提交、交付与并发 |
+| 4 | [版本管理 (2)](<articles/版本管理 (2).md>) | [PNG](<Assets/版本管理 (2)/cover.png>) | 索引：制品关系、变化身份、协作与 MVP |
+| 5 | [软件工程的来龙去脉](<articles/软件工程的来龙去脉.md>) | [PNG](<Assets/软件工程的来龙去脉/cover.png>) | 索引：保留此前完成的成果 |
+| 6 | [需求和架构 (1)](<articles/需求和架构 (1).md>) | [PNG](<Assets/需求和架构 (1)/cover.png>) | 分组：计算表示、历史依据、业务职责 |
+| 7 | [需求和架构 (2)](<articles/需求和架构 (2).md>) | [PNG](<Assets/需求和架构 (2)/cover.png>) | 矩阵：四类系统的稳定约定与变化空间 |
+| 8 | [Agent Native 开发](<articles/Agent Native 开发.md>) | [PNG](<Assets/Agent Native 开发/cover.png>) | 分组：工作状态、检查流程、验证学习 |
+| 9 | [DeepSeek Harness](<articles/DeepSeek Harness.md>) | [PNG](<Assets/DeepSeek Harness/cover.png>) | 分组：共同对象、协作规则、应用扩展 |
+| 10 | [软件的演化](<articles/软件的演化.md>) | [PNG](<Assets/软件的演化/cover.png>) | 索引：演化案例、提交历史与规则的边界 |
+
+原文、原始 HTML、分析、元数据与封面预览保存在各自的 `work/lect01/` 至 `work/lect10/` 中。封面均为 1600×1200，并经过溢出检查和逐张视觉核对。文章保留作者署名、来源与 CC BY-NC 4.0 授权；导读与正文分开。
+
+文章已按 article-format-correction skill 校正引号、链接目标、英文书名及少量数学标记，代码、URL、有效公式与正文段落顺序保留。第 8 讲正文「从 Agent 周围的工具……也能理解本讲『Deepseek Harness』这个题目的着眼点」与当前标题「Agent Native 开发」不一致，可能是旧标题残留；正文保留原句，需原作者确认。
 
 ```powershell
 uv run python -m unittest discover -s tests -v
