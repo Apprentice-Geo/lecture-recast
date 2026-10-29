@@ -6,7 +6,9 @@ from pathlib import Path
 import struct
 import tempfile
 import unittest
+from unittest.mock import patch
 
+from playwright.sync_api import sync_playwright
 from scripts.render_cover import build_html, render, validate_analysis
 
 
@@ -26,6 +28,42 @@ OUTLINE = {
 
 
 class CoverTests(unittest.TestCase):
+    def test_preview_loads_bundled_font_offline(self):
+        with tempfile.TemporaryDirectory(prefix="cover preview ") as folder:
+            folder = Path(folder)
+            data = self.sample("grouped")
+            source = folder / "analysis.json"
+            source.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+            preview = folder / "cover.html"
+            render(source, folder / "cover.png", preview)
+            with sync_playwright() as playwright:
+                browser = playwright.chromium.launch()
+                try:
+                    page = browser.new_page()
+                    page.context.set_offline(True)
+                    page.goto(preview.as_uri())
+                    faces = page.evaluate("""async () => {
+                        await document.fonts.ready;
+                        return (await document.fonts.load('400 22px "Source Han Sans SC"', '软件工程 0123')).map(font => font.status);
+                    }""")
+                    self.assertEqual(faces, ["loaded"])
+                finally:
+                    browser.close()
+
+    def test_invalid_font_is_rejected_before_export(self):
+        with tempfile.TemporaryDirectory() as folder:
+            folder = Path(folder)
+            data = self.sample("grouped")
+            source = folder / "analysis.json"
+            source.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+            font = folder / "broken.woff2"
+            font.write_bytes(b"invalid font")
+            output = folder / "cover.png"
+            with patch("scripts.render_cover.FONT_PATH", font):
+                with self.assertRaisesRegex(ValueError, "思源黑体加载失败"):
+                    render(source, output)
+            self.assertFalse(output.exists())
+
     def test_render_supported_section_counts(self):
         with tempfile.TemporaryDirectory() as folder:
             folder = Path(folder)
