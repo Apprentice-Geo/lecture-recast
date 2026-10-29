@@ -1,16 +1,18 @@
 {
-  "title": "版本管理",
+  "title": "版本管理 (1)",
+  "source_title": "版本管理",
+  "title_url": "https://jyywiki.cn/GSE/2026/",
   "url": "https://jyywiki.cn/GSE/2026/lect3.md",
   "author": "蒋炎岩（Yanyan Jiang）",
   "license": {
     "name": "CC BY-NC 4.0",
     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
   },
-  "article_name": "版本管理",
+  "article_name": "版本管理 (1)",
   "lecture": 3,
   "source_file": "work/lect03/source.md",
-  "publish_file": "articles/版本管理.md",
-  "assets_dir": "Assets/版本管理",
+  "publish_file": "articles/版本管理 (1).md",
+  "assets_dir": "Assets/版本管理 (1)",
   "reading_minutes": 20,
   "reading_units": 7963,
   "reading_method": "中文逐字及英文单词计数，按每分钟 400 单位估算，不含 Agent 导读",
