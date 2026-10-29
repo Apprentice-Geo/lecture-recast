@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1600, initial-scale=1">
+<title>软件工程的来龙去脉</title>
+<style>
+:root { --ink:#062b43; --text:#465867; --cyan:#057a99; --line:#d1dfe6; --paper:#f6f9fb; }
+* { box-sizing:border-box; }
+html, body { margin:0; width:1600px; height:1200px; }
+body { color:var(--ink); background:var(--paper); font-family:"Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif; }
+.cover { width:1600px; height:1200px; padding:26px 32px 24px; background:radial-gradient(ellipse at 18% 50%,#fff9 0,transparent 70%); }
+.masthead { height:94px; display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #bdced8; padding:0 4px 16px; }
+.brand { border-left:2px solid #b7cbd7; padding-left:26px; }
+.eyebrow { font-size:14px; letter-spacing:6px; line-height:24px; }
+.series { font-size:25px; letter-spacing:2px; margin-top:4px; }
+.edition { display:flex; align-items:center; height:72px; }
+.lecture { width:140px; border-left:1px solid #9fb6c5; padding-left:30px; }
+.lecture-label { font-size:14px; font-weight:600; letter-spacing:3px; }
+.lecture-number { color:#07607c; font-family:"Bahnschrift", "Arial Narrow", sans-serif; font-size:59px; font-weight:700; line-height:60px; }
+.keywords { width:132px; border-left:1px solid #9fb6c5; padding-left:27px; display:flex; flex-direction:column; gap:3px; font-size:16px; line-height:19px; }
+.body { display:grid; grid-template-columns:572px 1fr; gap:34px; height:1056px; padding-top:16px; }
+.intro { position:relative; border-right:1px solid var(--line); padding:20px 30px 0 20px; isolation:isolate; }
+.intro-copy { position:relative; z-index:2; }
+h1 { margin:0; padding-bottom:12px; font-size:96px; font-weight:800; line-height:1.12; letter-spacing:-3px; color:#032b43; overflow-wrap:anywhere; max-height:240px; }
+.subtitle { font-size:32px; line-height:1.45; margin-top:20px; max-height:94px; white-space:pre-line; }
+.accent { width:90px; height:7px; background:var(--cyan); margin:26px 0; }
+.summary { font-size:22px; line-height:1.55; margin:0; max-height:224px; color:var(--text); }
+.highlights { margin-top:26px; display:flex; flex-direction:column; gap:17px; }
+.highlight { display:grid; grid-template-columns:68px 1fr; gap:22px; align-items:center; min-height:66px; }
+.icon { height:66px; width:68px; display:grid; place-items:center; background:#e4edf3; border-radius:4px; color:#18516e; }
+.icon svg { width:35px; height:35px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.highlight-title { font-size:23px; font-weight:700; line-height:30px; }
+.highlight-description { font-size:19px; color:var(--text); line-height:29px; max-height:58px; }
+.decoration { position:absolute; z-index:0; left:-20px; bottom:64px; width:590px; height:260px; object-fit:cover; object-position:center 70%; opacity:.75; mask-image:linear-gradient(to bottom,transparent 0%,#000 43%); }
+.footer { position:absolute; bottom:0; left:0; height:54px; padding:1px 0 0 26px; border-left:2px solid #b7cbd7; font-size:13px; line-height:23px; letter-spacing:5px; z-index:2; background:var(--paper); width:calc(100% - 25px); }
+.outline { display:grid; grid-template-rows:repeat(var(--section-count),minmax(0,1fr)); min-height:0; }
+.section { display:grid; grid-template-columns:84px minmax(0,1fr) 298px; gap:20px; border-bottom:1px solid var(--line); padding:18px 0; align-items:start; min-height:0; }
+.section:first-child { padding-top:18px; }
+.section:last-child { border-bottom:0; }
+.number { font-family:"Bahnschrift", "Arial Narrow",sans-serif; color:#5591a8; font-size:66px; font-weight:600; line-height:1; border-right:1px solid #b9cfdb; padding-right:18px; align-self:stretch; }
+.section-text { min-width:0; }
+.section-title { font-size:29px; line-height:1.35; margin:0 0 10px; font-weight:750; color:#061f32; }
+.section-summary { font-size:20px; line-height:1.55; margin:0; color:var(--text); }
+.points { margin:0; padding:15px 16px 15px 22px; list-style:none; background:#e8eff3; align-self:center; min-width:0; }
+.points li { padding-left:14px; position:relative; font-size:18px; line-height:1.5; color:var(--text); }
+.points li + li { margin-top:7px; }
+.points li::before { content:"▸"; position:absolute; left:-3px; color:#267894; font-size:13px; top:4px; }
+.outline[data-count="7"] .section { padding:15px 0; gap:16px; }
+.outline[data-count="7"] .section-title { font-size:25px; margin-bottom:7px; }
+.outline[data-count="7"] .section-summary { font-size:19px; }
+.outline[data-count="7"] .number { font-size:60px; }
+.outline[data-count="7"] .points { padding:11px 14px 11px 20px; }
+.outline[data-count="7"] .points li { font-size:17px; }
+</style>
+</head>
+<body>
+<main class="cover">
+  <header class="masthead">
+    <div class="brand"><div class="eyebrow">GENERATIVE SOFTWARE ENGINEERING</div><div class="series">生成式软件工程 · 2026</div></div>
+    <div class="edition"><div class="lecture"><div class="lecture-label">LECTURE</div><div class="lecture-number">05</div></div><div class="keywords" data-check><span>能力边界</span><span>工程反馈</span><span>契约与模型</span><span>意图与实现</span></div></div>
+  </header>
+  <div class="body">
+    <aside class="intro">
+      <div class="intro-copy" data-check>
+        <h1 data-check>软件工程的来龙去脉</h1>
+        <div class="subtitle" data-check>当代码越来越便宜，
+软件工程要守住什么</div>
+        <div class="accent"></div>
+        <p class="summary" data-check>这一讲从 AI 快速生成原型谈起，回到软件危机与工程方法的历史，再借助契约和 UML 讨论怎样明确软件的行为。贯穿全文的问题是：当模型替我们补齐越来越多的实现细节，如何保存人的意图、尽早获得反馈，并让已作出的决定持续约束实现。</p>
+        <div class="highlights"><div class="highlight" data-check><div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 6c5-2 8-1 12 1v22c-4-2-7-3-12-1zM28 6c-5-2-8-1-12 1v22c4-2 7-3 12-1z"/></svg></div><div><div class="highlight-title" data-check>历史脉络</div><div class="highlight-description" data-check>从软件危机到工程纪律</div></div></div><div class="highlight" data-check><div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M28 5a9 9 0 0 1-11 11L8 27a4 4 0 0 1-5-5l11-9A9 9 0 0 1 25 2l-6 6 5 5z"/></svg></div><div><div class="highlight-title" data-check>方法与工具</div><div class="highlight-description" data-check>反馈、契约与 UML 语义</div></div></div><div class="highlight" data-check><div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="11" width="24" height="18" rx="4"/><path d="M16 11V5M2 18v6M30 18v6M11 24h10"/><circle cx="16" cy="3" r="2"/><circle cx="10" cy="18" r="1"/><circle cx="22" cy="18" r="1"/></svg></div><div><div class="highlight-title" data-check>面向未来</div><div class="highlight-description" data-check>保存并检查软件的承诺</div></div></div></div>
+      </div>
+      <img class="decoration" alt="" src="../../templates/assets/decoration.png">
+      <div class="footer">SOFTWARE ENGINEERING<br>PAST · PRESENT · FUTURE</div>
+    </aside>
+    <div class="outline" style="--section-count:6" data-count="6"><section class="section" data-check><div class="number">01</div><div class="section-text"><h2 class="section-title" data-check>AI 补全了什么，又留下什么</h2><p class="section-summary" data-check>模型能力持续变化，原型越来越容易生成；能运行的演示仍需接受真实需求的检验。</p></div><ul class="points" data-check><li data-check>能力边界与训练反馈</li><li data-check>原型隐含的业务决定</li><li data-check>意图、规约与实现的差距</li></ul></section><section class="section" data-check><div class="number">02</div><div class="section-text"><h2 class="section-title" data-check>软件危机与工程纪律的起点</h2><p class="section-summary" data-check>需求定制、系统规模与资源约束，把软件开发推向有组织、可检查的工程实践。</p></div><ul class="points" data-check><li data-check>软件危机与需求沟通</li><li data-check>阿波罗软件的异常恢复</li><li data-check>成本、时间与维护约束</li></ul></section><section class="section" data-check><div class="number">03</div><div class="section-text"><h2 class="section-title" data-check>用更早的反馈减少返工</h2><p class="section-summary" data-check>重读 Royce，区分阶段依赖与一次性推进；让关键假设尽早接触运行和用户反馈。</p></div><ul class="points" data-check><li data-check>试验系统、MVP 与迭代</li><li data-check>TDD 与基于性质的测试</li><li data-check>需求到测试的可追踪关系</li></ul></section><section class="section" data-check><div class="number">04</div><div class="section-text"><h2 class="section-title" data-check>契约把双方责任写清楚</h2><p class="section-summary" data-check>用前置条件、后置条件和不变量明确接口承诺，再通过检查或验证联系规约与实现。</p></div><ul class="points" data-check><li data-check>调用者与实现者的责任</li><li data-check>正常结果与违约的边界</li><li data-check>断言检查与静态验证</li></ul></section><section class="section" data-check><div class="number">05</div><div class="section-text"><h2 class="section-title" data-check>从 UML 学习如何表达意图</h2><p class="section-summary" data-check>区分图与模型、行为与要求，保留有意留白；分开不同语义，并检查模型自身的规则。</p></div><ul class="points" data-check><li data-check>模型、视图与交换格式</li><li data-check>约束、留白与语义维度</li><li data-check>模型检查的价值与边界</li></ul></section><section class="section" data-check><div class="number">06</div><div class="section-text"><h2 class="section-title" data-check>LLM 时代，持续维护软件承诺</h2><p class="section-summary" data-check>把已决定、禁止和未决定的行为显式保存，让快速改写的实现始终接受独立检查。</p></div><ul class="points" data-check><li data-check>显式保存三类行为信息</li><li data-check>契约、测试与验证条件</li><li data-check>版本历史与证据相互关联</li></ul></section></div>
+  </div>
+</main>
+</body>
+</html>

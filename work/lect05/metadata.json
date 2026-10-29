@@ -1,0 +1,27 @@
+{
+  "title": "软件工程的来龙去脉",
+  "url": "https://jyywiki.cn/GSE/2026/lect5.md",
+  "author": "蒋炎岩（Yanyan Jiang）",
+  "license": {
+    "name": "CC BY-NC 4.0",
+    "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  "article_name": "软件工程的来龙去脉",
+  "lecture": 5,
+  "source_file": "work/lect05/source.md",
+  "publish_file": "articles/软件工程的来龙去脉.md",
+  "assets_dir": "Assets/软件工程的来龙去脉",
+  "reading_minutes": 22,
+  "reading_units": 8772,
+  "reading_method": "中文逐字及英文单词计数，按每分钟 400 单位估算，不含 Agent 导读",
+  "fetched_at": "2026-10-29T12:10:38.280597+00:00",
+  "images": [],
+  "body_counts": {
+    "h1": 1,
+    "h2": 15,
+    "p": 88,
+    "pre": 1,
+    "img": 0,
+    "table": 0
+  }
+}
