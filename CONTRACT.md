@@ -8,6 +8,8 @@
 - `work/lect05/source.md`：转换后的完整正文，图片路径按最终发布目录计算。
 - `work/lect05/metadata.json`：抓取与发布元数据。
 - `work/lect05/analysis.json`：Agent 阅读 source.md 后手工提炼的内容，也是导读和封面的共同数据源。
+- `work/lect05/update_pending.json`：更新检查发现变化后创建的待办，Agent 完成分析核对、封面视觉检查、文章组装及格式校正后删除；重复检查保留未完成待办。
+- `work/update-report.json`：最近一次非只读更新检查的逐篇结果，包含新增、更新、无变化、失败及待 Agent 处理状态。
 - `scripts/`：抓取、发布组装、封面渲染脚本。
 - `templates/`：封面 HTML/CSS。
 - `templates/assets/`：模板共用素材，包含 `decoration.png`。

@@ -64,6 +64,21 @@ uv run playwright install chromium
 
    由 Agent 按该 skill 轻量校正标点、空格、Markdown 链接和公式标记，保留作者原意、结构、代码及 URL。原始 HTML 和 `source.md` 不作编辑性校正，供对照检查。重新组装文章会覆盖校正结果，需要再次应用该 skill。
 
+## 更新检查
+
+```powershell
+uv run scripts/check_updates.py
+uv run scripts/check_updates.py --check-only
+```
+
+脚本从课程目录发现已发布的讲义，检查所有讲次，不依赖连续编号；实验链接不纳入处理。对比本地 `source.md`、目录标题及正文图片的实际内容，因此同一 URL 下的图片更新也能识别。页面导航或页脚变化不会触发重新处理。
+
+默认下载新增或变化的正文、图片和元数据，终端逐篇输出检查与处理状态，最后给出统计和待办路径，同时保存 `work/update-report.json`。`--check-only` 只读取远端与本地内容，不写文件。单篇失败继续检查其余文章；有失败时返回退出码 1，否则为 0。
+
+发现变化后，`work/lectNN/update_pending.json` 标记后续工作。让 Agent 根据报告完整阅读当前 `source.md`，核对或创建 `analysis.json`，渲染并查看封面，组装文章，再使用 article-format-correction skill 校正格式；全部完成后删除该篇的待办标记。未完成的待办会在下次检查时继续提示。旧分析和已校正文章在抓取阶段保留，脚本不会把抓取完成误报为发布完成，也不会调用模型或自动沿用旧摘要。
+
+下载或转换失败不会覆盖该篇已有正文和元数据。标题改变时，新资源使用新标题的目录，旧文章和资源保留，由 Agent 在完成处理后核对。重新运行检查不会改写无变化文章的校正成果。
+
 ## 结果与检查
 
 | 讲次 | 整理后的文章 | 封面 | 布局与内容关系 |
