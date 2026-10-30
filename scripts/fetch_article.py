@@ -144,6 +144,47 @@ def convert_article(html, url, article_name, download_image):
     return result.strip() + "\n", title, plain_text, images, stats
 
 
+def prepare_article(client, raw, url, lecture, title, title_url, work, root=ROOT):
+    """Convert and download everything before touching existing article files."""
+    name = safe_name(title)
+    downloads = {}
+
+    def download(image_url, filename):
+        response = client.get(image_url)
+        response.raise_for_status()
+        downloads[f"Assets/{name}/{filename}"] = response.content
+
+    markdown, source_title, text, images, stats = convert_article(
+        raw.decode("utf-8-sig"), url, name, download)
+    minutes, units = reading_minutes(text)
+    metadata = {
+        "title": title, "source_title": source_title, "title_url": title_url,
+        "url": url, "author": "蒋炎岩（Yanyan Jiang）",
+        "license": {"name": "CC BY-NC 4.0", "url": LICENSE_URL},
+        "article_name": name, "lecture": lecture,
+        "source_file": (work / "source.md").relative_to(root).as_posix(),
+        "publish_file": f"articles/{name}.md", "assets_dir": f"Assets/{name}",
+        "reading_minutes": minutes, "reading_units": units,
+        "reading_method": "中文逐字及英文单词计数，按每分钟 400 单位估算，不含 Agent 导读",
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+        "images": images, "body_counts": stats,
+    }
+    return raw, markdown, metadata, downloads
+
+
+def save_article(prepared, work, root=ROOT):
+    raw, markdown, metadata, downloads = prepared
+    work.mkdir(parents=True, exist_ok=True)
+    for relative, content in downloads.items():
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+    (work / "source.html").write_bytes(raw)
+    (work / "source.md").write_text(markdown, encoding="utf-8")
+    (work / "metadata.json").write_text(
+        json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lecture", type=int, default=5)
@@ -154,7 +195,6 @@ def main():
         parser.error("lecture 必须是正整数")
     url = args.url or f"https://jyywiki.cn/GSE/2026/lect{args.lecture}.md"
     work = ROOT / "work" / f"lect{args.lecture:02}"
-    work.mkdir(parents=True, exist_ok=True)
     with httpx.Client(follow_redirects=True, timeout=40,
                       headers={"User-Agent": "lecture-recast/0.1 (personal article preparation)"}) as client:
         if args.html:
@@ -164,7 +204,6 @@ def main():
             response.raise_for_status()
             raw = response.content
             url = str(response.url)
-        (work / "source.html").write_bytes(raw)
         html = raw.decode("utf-8-sig")
         source_title = article_body(html).h1.get_text(strip=True)
         title_url = url
@@ -174,30 +213,10 @@ def main():
             response.raise_for_status()
             title = course_title(response.text, url)
             title_url = COURSE_URL
-        name = safe_name(title)
-        assets = ROOT / "Assets" / name
-        assets.mkdir(parents=True, exist_ok=True)
-        def download(image_url, filename):
-            response = client.get(image_url)
-            response.raise_for_status()
-            (assets / filename).write_bytes(response.content)
-        markdown, source_title, text, images, stats = convert_article(html, url, name, download)
-    minutes, units = reading_minutes(text)
-    (work / "source.md").write_text(markdown, encoding="utf-8")
-    metadata = {
-        "title": title, "source_title": source_title, "title_url": title_url,
-        "url": url, "author": "蒋炎岩（Yanyan Jiang）",
-        "license": {"name": "CC BY-NC 4.0", "url": LICENSE_URL},
-        "article_name": name, "lecture": args.lecture,
-        "source_file": (work / "source.md").relative_to(ROOT).as_posix(),
-        "publish_file": f"articles/{name}.md", "assets_dir": f"Assets/{name}",
-        "reading_minutes": minutes, "reading_units": units,
-        "reading_method": "中文逐字及英文单词计数，按每分钟 400 单位估算，不含 Agent 导读",
-        "fetched_at": datetime.now(timezone.utc).isoformat(),
-        "images": images, "body_counts": stats,
-    }
-    (work / "metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"已转换第 {args.lecture} 讲：{title}；约 {minutes} 分钟；{len(images)} 张原文图片")
+        prepared = prepare_article(client, raw, url, args.lecture, title, title_url, work)
+    save_article(prepared, work)
+    metadata = prepared[2]
+    print(f"已转换第 {args.lecture} 讲：{title}；约 {metadata['reading_minutes']} 分钟；{len(metadata['images'])} 张原文图片")
 
 
 if __name__ == "__main__":

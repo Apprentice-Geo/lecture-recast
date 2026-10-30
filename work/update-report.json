@@ -1,0 +1,87 @@
+{
+  "checked_at": "2026-10-30T11:20:34.168808+00:00",
+  "course_url": "https://jyywiki.cn/GSE/2026/",
+  "check_only": false,
+  "articles": [
+    {
+      "lecture": 1,
+      "title": "欢迎来到未来",
+      "url": "https://jyywiki.cn/GSE/2026/lect1.md",
+      "status": "unchanged",
+      "reasons": [],
+      "processing": "none"
+    },
+    {
+      "lecture": 2,
+      "title": "提示词与上下文工程",
+      "url": "https://jyywiki.cn/GSE/2026/lect2.md",
+      "status": "unchanged",
+      "reasons": [],
+      "processing": "none"
+    },
+    {
+      "lecture": 3,
+      "title": "版本管理 (1)",
+      "url": "https://jyywiki.cn/GSE/2026/lect3.md",
+      "status": "unchanged",
+      "reasons": [],
+      "processing": "none"
+    },
+    {
+      "lecture": 4,
+      "title": "版本管理 (2)",
+      "url": "https://jyywiki.cn/GSE/2026/lect4.md",
+      "status": "unchanged",
+      "reasons": [],
+      "processing": "none"
+    },
+    {
+      "lecture": 5,
+      "title": "软件工程的来龙去脉",
+      "url": "https://jyywiki.cn/GSE/2026/lect5.md",
+      "status": "unchanged",
+      "reasons": [],
+      "processing": "none"
+    },
+    {
+      "lecture": 6,
+      "title": "需求和架构 (1)",
+      "url": "https://jyywiki.cn/GSE/2026/lect6.md",
+      "status": "unchanged",
+      "reasons": [],
+      "processing": "none"
+    },
+    {
+      "lecture": 7,
+      "title": "需求和架构 (2)",
+      "url": "https://jyywiki.cn/GSE/2026/lect7.md",
+      "status": "unchanged",
+      "reasons": [],
+      "processing": "none"
+    },
+    {
+      "lecture": 8,
+      "title": "Agent Native 开发",
+      "url": "https://jyywiki.cn/GSE/2026/lect8.md",
+      "status": "unchanged",
+      "reasons": [],
+      "processing": "none"
+    },
+    {
+      "lecture": 9,
+      "title": "DeepSeek Harness",
+      "url": "https://jyywiki.cn/GSE/2026/lect9.md",
+      "status": "unchanged",
+      "reasons": [],
+      "processing": "none"
+    },
+    {
+      "lecture": 10,
+      "title": "软件的演化",
+      "url": "https://jyywiki.cn/GSE/2026/lect10.md",
+      "status": "unchanged",
+      "reasons": [],
+      "processing": "none"
+    }
+  ]
+}
