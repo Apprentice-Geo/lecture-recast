@@ -9,6 +9,8 @@ uv sync
 uv run playwright install chromium
 uv run scripts/fetch_article.py --lecture 5
 uv run scripts/fetch_article.py --lecture 5 --html work/lect05/source.html
+uv run scripts/check_updates.py
+uv run scripts/check_updates.py --check-only
 uv run scripts/render_cover.py --analysis work/lect05/analysis.json --output Assets/软件工程的来龙去脉/cover.png --html work/lect05/cover.html
 uv run scripts/build_publish.py --work work/lect05
 uv run python -m unittest discover -s tests -v
