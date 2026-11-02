@@ -3,18 +3,19 @@
 from __future__ import annotations
 
 import argparse
-import base64
 import html
 import json
 import os
 from pathlib import Path
 import re
+import tempfile
 from urllib.parse import quote
 
 from playwright.sync_api import sync_playwright
 
 
 ROOT = Path(__file__).resolve().parents[1]
+DECORATION_PATH = ROOT / "templates" / "assets" / "decoration.png"
 FONT_PATH = ROOT / "templates" / "assets" / "fonts" / "source-han-sans" / "SourceHanSansSC-VF.otf.woff2"
 LAYOUTS = ("index", "matrix", "grouped")
 ICONS = {
@@ -90,11 +91,18 @@ def validate_analysis(data: object, layout: str | None = None) -> dict:
     return data
 
 
-def build_html(data: dict, layout: str | None = None, *, font_url: str | None = None) -> str:
+def asset_url(path: Path, base_dir: Path) -> str:
+    try:
+        return quote(Path(os.path.relpath(path, base_dir)).as_posix())
+    except ValueError:  # Windows cannot form a relative path across drives.
+        return path.as_uri()
+
+
+def build_html(data: dict, layout: str | None = None, *, base_dir: Path | None = None) -> str:
     layout = layout or data.get("layout", "index")
+    base_dir = (base_dir or ROOT / "templates").resolve()
     escape = html.escape
     template = (ROOT / "templates" / "cover.html").read_text(encoding="utf-8")
-    decoration = base64.b64encode((ROOT / "templates" / "assets" / "decoration.png").read_bytes()).decode("ascii")
     highlights = "".join(
         '<div class="highlight" data-check><div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true">'
         + ICONS[item["icon"]]
@@ -168,8 +176,8 @@ def build_html(data: dict, layout: str | None = None, *, font_url: str | None = 
         "LAYOUT": layout,
         "COLUMNS": str(columns),
         "CONTENT": content,
-        "DECORATION": "data:image/png;base64," + decoration,
-        "FONT": escape(font_url) if font_url else "data:font/woff2;base64," + base64.b64encode(FONT_PATH.read_bytes()).decode("ascii"),
+        "DECORATION": escape(asset_url(DECORATION_PATH, base_dir)),
+        "FONT": escape(asset_url(FONT_PATH, base_dir)),
     }
     return re.sub(r"%%([A-Z]+)%%", lambda match: values[match[1]], template)
 
@@ -202,12 +210,13 @@ CHECK_OVERFLOW = """() => {
 def render(analysis: Path, output: Path, preview: Path | None = None, layout: str | None = None) -> None:
     data = validate_analysis(json.loads(analysis.read_text(encoding="utf-8-sig")), layout)
     layout = layout or data.get("layout", "index")
-    document = build_html(data, layout)
-    with sync_playwright() as playwright:
+    with tempfile.TemporaryDirectory(prefix="lecture-cover-") as folder, sync_playwright() as playwright:
+        document = Path(folder) / "cover.html"
+        document.write_text(build_html(data, layout, base_dir=document.parent), encoding="utf-8")
         browser = playwright.chromium.launch()
         try:
             page = browser.new_page(viewport={"width": 1600, "height": 1200}, device_scale_factor=1)
-            page.set_content(document, wait_until="load")
+            page.goto(document.as_uri(), wait_until="load")
             page.evaluate("document.fonts.ready")
             font_statuses = page.evaluate("() => Array.from(document.fonts, font => font.status)")
             if not font_statuses or any(status != "loaded" for status in font_statuses):
@@ -223,18 +232,14 @@ def render(analysis: Path, output: Path, preview: Path | None = None, layout: st
             browser.close()
     if preview:
         preview.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            font_url = quote(Path(os.path.relpath(FONT_PATH, preview.resolve().parent)).as_posix())
-        except ValueError:  # Windows cannot form a relative path across drives.
-            font_url = FONT_PATH.as_uri()
-        preview.write_text(build_html(data, layout, font_url=font_url), encoding="utf-8")
+        preview.write_text(build_html(data, layout, base_dir=preview.resolve().parent), encoding="utf-8")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--analysis", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--html", type=Path, help="可选：保存内嵌装饰图、引用仓库字体的 HTML 预览")
+    parser.add_argument("--html", type=Path, help="可选：保存通过本地路径引用装饰图和字体的 HTML 预览")
     parser.add_argument("--layout", choices=LAYOUTS, help="右侧布局；覆盖 analysis.json 的 layout，默认 index")
     args = parser.parse_args()
     try:

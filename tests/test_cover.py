@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 from playwright.sync_api import sync_playwright
-from scripts.render_cover import build_html, render, validate_analysis
+from scripts.render_cover import ROOT, build_html, render, validate_analysis
 
 
 OUTLINE = {
@@ -28,14 +28,17 @@ OUTLINE = {
 
 
 class CoverTests(unittest.TestCase):
-    def test_preview_loads_bundled_font_offline(self):
-        with tempfile.TemporaryDirectory(prefix="cover preview ") as folder:
+    def test_preview_loads_relative_assets_offline(self):
+        with tempfile.TemporaryDirectory(prefix="cover preview ", dir=ROOT / "work") as folder:
             folder = Path(folder)
             data = self.sample("grouped")
             source = folder / "analysis.json"
             source.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
-            preview = folder / "cover.html"
+            preview = folder / "预览 #1" / "cover.html"
             render(source, folder / "cover.png", preview)
+            document = preview.read_text(encoding="utf-8")
+            self.assertNotIn("data:", document)
+            self.assertNotIn("file:", document)
             with sync_playwright() as playwright:
                 browser = playwright.chromium.launch()
                 try:
@@ -47,6 +50,7 @@ class CoverTests(unittest.TestCase):
                         return (await document.fonts.load('400 22px "Source Han Sans SC"', '软件工程 0123')).map(font => font.status);
                     }""")
                     self.assertEqual(faces, ["loaded"])
+                    self.assertTrue(page.locator(".decoration").evaluate("img => img.complete && img.naturalWidth > 0"))
                 finally:
                     browser.close()
 
@@ -61,6 +65,19 @@ class CoverTests(unittest.TestCase):
             output = folder / "cover.png"
             with patch("scripts.render_cover.FONT_PATH", font):
                 with self.assertRaisesRegex(ValueError, "思源黑体加载失败"):
+                    render(source, output)
+            self.assertFalse(output.exists())
+
+    def test_invalid_decoration_is_rejected_before_export(self):
+        with tempfile.TemporaryDirectory() as folder:
+            folder = Path(folder)
+            source = folder / "analysis.json"
+            source.write_text(json.dumps(self.sample("grouped"), ensure_ascii=False), encoding="utf-8")
+            decoration = folder / "broken.png"
+            decoration.write_bytes(b"invalid image")
+            output = folder / "cover.png"
+            with patch("scripts.render_cover.DECORATION_PATH", decoration):
+                with self.assertRaisesRegex(ValueError, "装饰图加载失败"):
                     render(source, output)
             self.assertFalse(output.exists())
 
