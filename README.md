@@ -37,7 +37,7 @@ uv run playwright install chromium
 
 2. 让 Agent 完整阅读 `source.md`，按 CONTRACT.md 格式编辑同目录下的 `analysis.json`。第 5 讲已经完成。重新抓取后应重新核对分析，脚本不会自动更新它。
 
-3. 根据分析渲染封面。`--html` 可选，保存内嵌装饰图的 HTML 预览；字体通过相对路径引用 `templates/assets/fonts/`，离线查看时需保留仓库目录结构。
+3. 根据分析渲染封面。`--html` 可选，保存 HTML 预览；装饰图与字体通过相对路径引用 `templates/assets/` 中的共用资源，避免在每份 HTML 中重复内嵌 Base64。离线查看时需保留仓库目录结构；预览保存到其他盘符时使用本地文件 URL。PNG 渲染也从本地 HTML 加载这些资源。
 
    ```powershell
    uv run scripts/render_cover.py --analysis work/lect05/analysis.json --output Assets/软件工程的来龙去脉/cover.png --html work/lect05/cover.html
