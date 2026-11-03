@@ -93,8 +93,9 @@ uv run scripts/check_updates.py --check-only
 | 8 | [Agent Native 开发](<articles/Agent Native 开发.md>) | [PNG](<Assets/Agent Native 开发/cover.png>) | 分组：工作状态、检查流程、验证学习 |
 | 9 | [DeepSeek Harness](<articles/DeepSeek Harness.md>) | [PNG](<Assets/DeepSeek Harness/cover.png>) | 分组：共同对象、协作规则、应用扩展 |
 | 10 | [软件的演化](<articles/软件的演化.md>) | [PNG](<Assets/软件的演化/cover.png>) | 索引：演化案例、提交历史与规则的边界 |
+| 11 | [软件质量保障 (1)](<articles/软件质量保障 (1).md>) | [PNG](<Assets/软件质量保障 (1)/cover.png>) | 索引：测试证据、可测试架构与实验闭环 |
 
-原文、原始 HTML、分析、元数据与封面预览保存在各自的 `work/lect01/` 至 `work/lect10/` 中。封面均为 1600×1200，并经过溢出检查和逐张视觉核对。文章保留作者署名、来源与 CC BY-NC 4.0 授权；导读与正文分开。
+原文、原始 HTML、分析、元数据与封面预览保存在各自的 `work/lect01/` 至 `work/lect11/` 中。封面均为 1600×1200，并经过溢出检查和逐张视觉核对。文章保留作者署名、来源与 CC BY-NC 4.0 授权；导读与正文分开。
 
 文章已按 article-format-correction skill 校正引号、链接目标、英文书名及少量数学标记，代码、URL、有效公式与正文段落顺序保留。第 8 讲正文「从 Agent 周围的工具……也能理解本讲『Deepseek Harness』这个题目的着眼点」与当前标题「Agent Native 开发」不一致，可能是旧标题残留；正文保留原句，需原作者确认。
 
