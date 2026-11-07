@@ -8,8 +8,8 @@
 - `work/lect05/source.md`：转换后的完整正文，图片路径按最终发布目录计算。
 - `work/lect05/metadata.json`：抓取与发布元数据。
 - `work/lect05/analysis.json`：Agent 阅读 source.md 后手工提炼的内容，也是导读和封面的共同数据源。
-- `work/lect05/update_pending.json`：更新检查发现变化后创建的待办，Agent 完成分析核对、封面视觉检查、文章组装及格式校正后删除；重复检查保留未完成待办。
-- `work/update-report.json`：最近一次非只读更新检查的逐篇结果，包含新增、更新、无变化、失败及待 Agent 处理状态。
+- `work/lect05/update_pending.json`：旧版检查脚本留下的待办；现在仅提示已有标记，由 Agent 完成核对后删除，不再自动创建或更新。
+- `work/update-report.json`：旧版检查脚本留下的历史报告；现在仅在终端报告检查结果，不再写入该文件。
 - `scripts/`：抓取、发布组装、封面渲染脚本。
 - `templates/`：封面 HTML/CSS。
 - `templates/assets/`：模板共用素材，包含 `decoration.png`。
@@ -112,7 +112,7 @@ uv run scripts/render_cover.py --analysis work/lect05/analysis.json --output Ass
 
 ## 内容和验收
 
-- 完整保留正文，只做格式转换，不改写、删减或重排正文。
+- 完整保留正文，只做格式转换，不改写、删减或重排正文。经作者确认的笔误可在产出文章中校正，依据记录在 [README 的结果与检查](<README.md#结果与检查>)；抓取原文保持不变，重新组装后须重新应用已确认的校正。
 - 组装后的文章使用 [article-format-correction](<https://github.com/Apprentice-Geo/skills/tree/main/article-format-correction>) skill 校正格式，原始 HTML 与 source.md 保留转换结果；重新组装后需再次校正。
 - 转载说明、Agent 导读、阅读时间与原文明确分开；来源和授权链接保留。
 - 行内公式用 `$...$`，行间公式用 `$$...$$`；代码内的数学标记保持原样。

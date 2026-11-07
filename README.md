@@ -71,13 +71,13 @@ uv run scripts/check_updates.py
 uv run scripts/check_updates.py --check-only
 ```
 
-脚本从课程目录发现已发布的讲义，检查所有讲次，不依赖连续编号；实验链接不纳入处理。对比本地 `source.md`、目录标题及正文图片的实际内容，因此同一 URL 下的图片更新也能识别。页面导航或页脚变化不会触发重新处理。
+脚本从课程目录发现已发布的讲义，检查所有讲次，不依赖连续编号；实验链接不纳入检查。对比本地 `source.md`、目录标题及正文图片的实际内容，因此同一 URL 下的图片更新也能识别。页面导航或页脚变化不会报告为正文更新。
 
-默认下载新增或变化的正文、图片和元数据，终端逐篇输出检查与处理状态，最后给出统计和待办路径，同时保存 `work/update-report.json`。`--check-only` 只读取远端与本地内容，不写文件。单篇失败继续检查其余文章；有失败时返回退出码 1，否则为 0。
+脚本始终只探测：在内存中读取、转换远端正文并比较图片，终端逐篇输出状态、变化原因和待 Agent 处理的来源链接，最后给出统计。不会写入正文、图片、元数据、分析、文章、报告或待办文件。`--check-only` 保留为兼容参数，与默认行为相同。单篇失败继续检查其余文章；有失败时返回退出码 1，否则为 0。
 
-发现变化后，`work/lectNN/update_pending.json` 标记后续工作。让 Agent 根据报告完整阅读当前 `source.md`，核对或创建 `analysis.json`，渲染并查看封面，组装文章，再使用 article-format-correction skill 校正格式；全部完成后删除该篇的待办标记。未完成的待办会在下次检查时继续提示。旧分析和已校正文章在抓取阶段保留，脚本不会把抓取完成误报为发布完成，也不会调用模型或自动沿用旧摘要。
+发现新增或变化后，由 Agent 核对差异，再按工作流调用 `fetch_article.py` 抓取，完整阅读新的 `source.md`，核对或创建 `analysis.json`，渲染并查看封面，组装文章，再使用 article-format-correction skill 校正格式。重新组装时须保留已确认的人工校正（见下文第 8 讲说明），不能因上游尚未修正就恢复笔误。
 
-下载或转换失败不会覆盖该篇已有正文和元数据。标题改变时，新资源使用新标题的目录，旧文章和资源保留，由 Agent 在完成处理后核对。重新运行检查不会改写无变化文章的校正成果。
+旧版留下的 `work/update-report.json` 仅为历史检查结果；检查脚本不再更新它。已有 `work/lectNN/update_pending.json` 会继续提示待 Agent 处理，但不创建、修改或删除标记，由 Agent 完成核对后清理。
 
 ## 结果与检查
 
@@ -97,7 +97,7 @@ uv run scripts/check_updates.py --check-only
 
 原文、原始 HTML、分析、元数据与封面预览保存在各自的 `work/lect01/` 至 `work/lect11/` 中。封面均为 1600×1200，并经过溢出检查和逐张视觉核对。文章保留作者署名、来源与 CC BY-NC 4.0 授权；导读与正文分开。
 
-文章已按 article-format-correction skill 校正引号、链接目标、英文书名及少量数学标记，代码、URL、有效公式与正文段落顺序保留。第 8 讲正文「从 Agent 周围的工具……也能理解本讲『Deepseek Harness』这个题目的着眼点」与当前标题「Agent Native 开发」不一致，可能是旧标题残留；正文保留原句，需原作者确认。
+文章已按 article-format-correction skill 校正引号、链接目标、英文书名及少量数学标记，代码、URL、有效公式与正文段落顺序保留。维护者已联系原作者确认，第 8 讲正文「也能理解本讲『Deepseek Harness』这个题目的着眼点」中的题目是笔误，应为本讲标题「Agent Native 开发」。产出文章已据此更正，`source.html` 和 `source.md` 保留抓取原文。该确认作为校正依据；即使作者尚未修正上游，后续重新组装仍应保留此项更正。
 
 ```powershell
 uv run python -m unittest discover -s tests -v

@@ -1,15 +1,14 @@
-"""Check course articles and prepare changed sources for the Agent workflow."""
+"""Detect course article changes without modifying local files."""
 
 import argparse
 from datetime import datetime, timezone
 import json
-from pathlib import Path
 import re
 from urllib.parse import urljoin, urlsplit
 
 import httpx
 
-from fetch_article import COURSE_URL, ROOT, article_body, prepare_article, save_article
+from fetch_article import COURSE_URL, ROOT, article_body, prepare_article
 
 
 def discover_articles(html):
@@ -57,9 +56,9 @@ def change_reasons(prepared, work, root):
     return ("updated" if reasons else "unchanged"), reasons
 
 
-def check_updates(client, root=ROOT, check_only=False):
+def check_updates(client, root=ROOT):
     report = {"checked_at": datetime.now(timezone.utc).isoformat(),
-              "course_url": COURSE_URL, "check_only": check_only, "articles": []}
+              "course_url": COURSE_URL, "check_only": True, "articles": []}
     response = client.get(COURSE_URL)
     response.raise_for_status()
     articles = discover_articles(response.text)
@@ -74,24 +73,14 @@ def check_updates(client, root=ROOT, check_only=False):
                                        entry["title"], COURSE_URL, work, root)
             status, reasons = change_reasons(prepared, work, root)
             result.update(status=status, reasons=reasons, processing="none")
-            if status != "unchanged":
-                if check_only:
-                    result["processing"] = "check_only"
-                else:
-                    # A pending marker survives interrupted/repeated runs; stale analysis
-                    # and corrected publish files are deliberately left for Agent review.
-                    work.mkdir(parents=True, exist_ok=True)
-                    pending.write_text(json.dumps({**entry, "reasons": reasons,
-                                                  "detected_at": report["checked_at"]},
-                                                 ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-                    save_article(prepared, work, root)
-                    result["processing"] = "pending_agent"
-            elif pending.exists():
+            # Retain visibility of unfinished work left by older versions.
+            if status != "unchanged" or pending.exists():
                 result["processing"] = "pending_agent"
             label = {"new": "新增", "updated": "有更新", "unchanged": "无变化"}[status]
-            action = {"none": "保留现有成果", "check_only": "仅检查，未写入",
-                      "pending_agent": "原文已就绪，待 Agent 完成分析、封面、组装和格式校正"}[result["processing"]]
-            print(f"[第 {entry['lecture']:02} 讲] {entry['title']}：{label}；{action}", flush=True)
+            action = {"none": "仅探测，未写入",
+                      "pending_agent": "仅探测，未写入；待 Agent 核对并处理"}[result["processing"]]
+            detail = f"（{'、'.join(reasons)}）" if reasons else ""
+            print(f"[第 {entry['lecture']:02} 讲] {entry['title']}：{label}{detail}；{action}", flush=True)
         except (httpx.HTTPError, OSError, ValueError, KeyError) as exc:
             result.update(status="failed", processing="failed", error=str(exc))
             print(f"[第 {entry['lecture']:02} 讲] {entry['title']}：失败；{exc}", flush=True)
@@ -107,23 +96,18 @@ def print_summary(report):
     print(f"\n检查完成：共 {len(entries)} 篇，新增 {counts['new']}，更新 {counts['updated']}，"
           f"无变化 {counts['unchanged']}，失败 {counts['failed']}；待 Agent 处理 {len(pending)} 篇。")
     for item in pending:
-        print(f"  待办：work/lect{item['lecture']:02}/source.md（{item['title']}）")
+        print(f"  待处理：第 {item['lecture']:02} 讲（{item['title']}） {item['url']}")
     return 1 if counts["failed"] else 0
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check-only", action="store_true", help="只检查，不改动本地文件或保存报告")
-    args = parser.parse_args()
+    parser.add_argument("--check-only", action="store_true", help="兼容旧命令；默认即只探测，不写文件")
+    parser.parse_args()
     try:
         with httpx.Client(follow_redirects=True, timeout=40,
                           headers={"User-Agent": "lecture-recast/0.1 (update check)"}) as client:
-            report = check_updates(client, check_only=args.check_only)
-        if not args.check_only:
-            target = ROOT / "work" / "update-report.json"
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            print(f"\n检查报告：{target}")
+            report = check_updates(client, root=ROOT)
         return print_summary(report)
     except (httpx.HTTPError, OSError, ValueError, KeyError) as exc:
         print(f"检查失败：{exc}")

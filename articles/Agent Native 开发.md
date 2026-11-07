@@ -1,7 +1,7 @@
 # Agent Native 开发
 
 > 原文作者：蒋炎岩（Yanyan Jiang）。来源：[生成式软件工程（2026）第 8 讲](<https://jyywiki.cn/GSE/2026/lect8.md>)。
-> 原站标注 [CC BY-NC 4.0](<https://creativecommons.org/licenses/by-nc/4.0/>) 授权。本文为非商业转载整理，仅做格式转换，正文未作改写；以下导读和封面由 Agent 整理，不属于原文。
+> 原站标注 [CC BY-NC 4.0](<https://creativecommons.org/licenses/by-nc/4.0/>) 授权。本文为非商业转载整理，做格式转换并依据作者确认校正一处标题笔误；以下导读和封面由 Agent 整理，不属于原文。
 > 处理工具和处理后的文字原稿已开源至 [lecture-recast](<https://github.com/Apprentice-Geo/lecture-recast>)。
 
 ![文章脉络封面](<../Assets/Agent Native 开发/cover.png>)
@@ -134,7 +134,7 @@ OpenAI 的 [Harness engineering 文章](<https://openai.com/index/harness-engine
 
 ## 真正的经验，以及垃圾回收解决不了的问题
 
-从 Agent 周围的工具、约束和验证机制，也能理解本讲「Deepseek Harness」这个题目的着眼点：模型之外，还有一整套让工作得以推进的装备。那些看似理所当然的设计，常常来自真的做过、失败过、修正过。仅凭空想象，很难一下子想到所有有效的边界和反馈方式。
+从 Agent 周围的工具、约束和验证机制，也能理解本讲「Agent Native 开发」这个题目的着眼点：模型之外，还有一整套让工作得以推进的装备。那些看似理所当然的设计，常常来自真的做过、失败过、修正过。仅凭空想象，很难一下子想到所有有效的边界和反馈方式。
 
 但持续清理技术债，也有它解决不了的问题。我们可以把日常清理类比为垃圾回收（garbage collection）：消除重复、修正文档、统一接口、防止坏模式扩散。这里说的是工程维护的类比，并非编程语言运行时的内存回收。即使这些工作全部做好，系统仍可能建立在一个已经失效的设计假设上。
 
