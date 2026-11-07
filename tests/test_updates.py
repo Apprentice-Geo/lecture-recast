@@ -89,21 +89,20 @@ class UpdateTests(unittest.TestCase):
             self.assertEqual(json.loads((work / "analysis.json").read_text(encoding="utf-8"))["summary"], "人工分析")
 
     def test_cli_always_writes_nothing_and_reports_new(self):
-        for flags in ([], ["--check-only"]):
-            with self.subTest(flags=flags), tempfile.TemporaryDirectory() as folder:
-                root = Path(folder)
-                pages = {COURSE_URL: page('<a href="lect1.md">一</a>'),
-                         COURSE_URL + "lect1.md": page('<p>原文</p>')}
-                client = self.client(pages)
-                with patch("check_updates.ROOT", root), \
-                     patch("check_updates.httpx.Client", return_value=client), \
-                     patch.object(sys, "argv", ["check_updates.py", *flags]), \
-                     contextlib.redirect_stdout(io.StringIO()) as output:
-                    self.assertEqual(main(), 0)
-                self.assertIn("新增 1", output.getvalue())
-                self.assertIn("待 Agent 处理 1 篇", output.getvalue())
-                self.assertIn(COURSE_URL + "lect1.md", output.getvalue())
-                self.assertEqual(list(root.iterdir()), [])
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            pages = {COURSE_URL: page('<a href="lect1.md">一</a>'),
+                     COURSE_URL + "lect1.md": page('<p>原文</p>')}
+            client = self.client(pages)
+            with patch("check_updates.ROOT", root), \
+                 patch("check_updates.httpx.Client", return_value=client), \
+                 patch.object(sys, "argv", ["check_updates.py"]), \
+                 contextlib.redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(main(), 0)
+            self.assertIn("新增 1", output.getvalue())
+            self.assertIn("待 Agent 处理 1 篇", output.getvalue())
+            self.assertIn(COURSE_URL + "lect1.md", output.getvalue())
+            self.assertEqual(list(root.iterdir()), [])
 
     def test_legacy_pending_and_report_are_preserved(self):
         with tempfile.TemporaryDirectory() as folder:

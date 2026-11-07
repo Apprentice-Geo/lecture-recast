@@ -102,7 +102,6 @@ def print_summary(report):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check-only", action="store_true", help="兼容旧命令；默认即只探测，不写文件")
     parser.parse_args()
     try:
         with httpx.Client(follow_redirects=True, timeout=40,
