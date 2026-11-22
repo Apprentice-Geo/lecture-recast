@@ -9,12 +9,11 @@
 - `work/lect05/metadata.json`：抓取与发布元数据。
 - `work/lect05/analysis.json`：Agent 阅读 source.md 后手工提炼的内容，也是导读和封面的共同数据源。
 - `work/lect05/update_pending.json`：旧版检查脚本留下的待办；现在仅提示已有标记，由 Agent 完成核对后删除，不再自动创建或更新。
-- `work/update-report.json`：旧版检查脚本留下的历史报告；现在仅在终端报告检查结果，不再写入该文件。
 - `scripts/`：抓取、发布组装、封面渲染脚本。
 - `templates/`：封面 HTML/CSS。
 - `templates/assets/`：模板共用素材，包含 `decoration.png`。
 
-`work/<讲次>/` 保留中间结果供人工检查；文章目录仅存放待发布的 Markdown。
+`work/<讲次>/` 在本地保留中间结果供人工检查，由 Git 忽略。文章目录仅存放待发布的 Markdown。
 
 ## analysis.json
 
@@ -96,7 +95,7 @@ UTF-8 JSON；左侧信息共用，右侧支持纵向索引、网格矩阵和分�
 }
 ```
 
-以上片段需与公共左侧字段组成完整 analysis.json；矩阵和分组不需要 `sections`。导读组装直接使用所选结构的行或分类，保持分析数据为单一来源。原有索引数据格式保持可用。实际样例见 `work/lect05/analysis.json`、`work/lect07/analysis.json` 和 `work/lect09/analysis.json`。
+以上片段需与公共左侧字段组成完整 analysis.json；矩阵和分组不需要 `sections`。导读组装直接使用所选结构的行或分类，保持分析数据为单一来源。原有索引数据格式保持可用。
 
 ## 元数据与命令
 

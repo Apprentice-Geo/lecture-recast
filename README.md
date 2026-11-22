@@ -19,6 +19,8 @@ uv run playwright install chromium
 
 ## 工作流
 
+`work/` 存放本地中间产物，由 Git 忽略。新克隆可直接查看 `articles/` 和 `Assets/` 中已发布的成果。需要重新生成时，按以下步骤在本地准备工作文件。
+
 1. 抓取并转换原文。
 
    ```powershell
@@ -35,7 +37,7 @@ uv run playwright install chromium
    uv run scripts/fetch_article.py --lecture 5 --html work/lect05/source.html
    ```
 
-2. 让 Agent 完整阅读 `source.md`，按 CONTRACT.md 格式编辑同目录下的 `analysis.json`。第 5 讲已经完成。重新抓取后应重新核对分析，脚本不会自动更新它。
+2. 让 Agent 完整阅读 `source.md`，按 CONTRACT.md 格式编辑同目录下的 `analysis.json`。重新抓取后应重新核对分析，脚本不会自动更新它。
 
 3. 根据分析渲染封面。`--html` 可选，保存 HTML 预览；装饰图与字体通过相对路径引用 `templates/assets/` 中的共用资源，避免在每份 HTML 中重复内嵌 Base64。离线查看时需保留仓库目录结构；预览保存到其他盘符时使用本地文件 URL。PNG 渲染也从本地 HTML 加载这些资源。
 
@@ -72,11 +74,13 @@ uv run scripts/check_updates.py
 
 脚本从课程目录发现已发布的讲义，检查所有讲次，不依赖连续编号；实验链接不纳入检查。对比本地 `source.md`、目录标题及正文图片的实际内容，因此同一 URL 下的图片更新也能识别。页面导航或页脚变化不会报告为正文更新。
 
+检查以本地抓取记录为基准。新克隆尚未建立本地记录时，检查会将这些讲义报告为新增。
+
 脚本始终只探测：在内存中读取、转换远端正文并比较图片，终端逐篇输出状态、变化原因和待 Agent 处理的来源链接，最后给出统计。不会写入正文、图片、元数据、分析、文章、报告或待办文件。单篇失败继续检查其余文章；有失败时返回退出码 1，否则为 0。
 
 发现新增或变化后，由 Agent 核对差异，再按工作流调用 `fetch_article.py` 抓取，完整阅读新的 `source.md`，核对或创建 `analysis.json`，渲染并查看封面，组装文章，再使用 article-format-correction skill 校正格式。重新组装时须保留已确认的人工校正（见下文第 8 讲说明），不能因上游尚未修正就恢复笔误。
 
-旧版留下的 `work/update-report.json` 仅为历史检查结果；检查脚本不再更新它。已有 `work/lectNN/update_pending.json` 会继续提示待 Agent 处理，但不创建、修改或删除标记，由 Agent 完成核对后清理。
+已有 `work/lectNN/update_pending.json` 会继续提示待 Agent 处理，但不创建、修改或删除标记，由 Agent 完成核对后清理。
 
 ## 结果与检查
 
@@ -96,7 +100,7 @@ uv run scripts/check_updates.py
 | 12 | [软件质量保障 (2)](<articles/软件质量保障 (2).md>) | [PNG](<Assets/软件质量保障 (2)/cover.png>) | 索引：不变式、模型检查、证明助手与规格意图 |
 | 13 | [软件分析工具](<articles/软件分析工具.md>) | [PNG](<Assets/软件分析工具/cover.png>) | 索引：分析工具的证据、程序意图与架构演化 |
 
-原文、原始 HTML、分析、元数据与封面预览保存在各自的 `work/lect01/` 至 `work/lect13/` 中。封面均为 1600×1200，并经过溢出检查和逐张视觉核对。文章保留作者署名、来源与 CC BY-NC 4.0 授权；导读与正文分开。
+封面均为 1600×1200，并经过溢出检查和逐张视觉核对。文章保留作者署名、来源与 CC BY-NC 4.0 授权；导读与正文分开。
 
 文章已按 article-format-correction skill 校正引号、链接目标、英文书名及少量数学标记，代码、URL、有效公式与正文段落顺序保留。维护者已联系原作者确认，第 8 讲正文「也能理解本讲『Deepseek Harness』这个题目的着眼点」中的题目是笔误，应为本讲标题「Agent Native 开发」。产出文章已据此更正，`source.html` 和 `source.md` 保留抓取原文。该确认作为校正依据；即使作者尚未修正上游，后续重新组装仍应保留此项更正。
 
@@ -104,7 +108,7 @@ uv run scripts/check_updates.py
 uv run python -m unittest discover -s tests -v
 ```
 
-测试覆盖转换时的代码、链接、表格、图片和 TeX 保留、下载失败处理、封面布局与溢出，以及第 5 讲快照的全文比对。封面测试需要已安装 Chromium，首次运行完整测试前须组装文章。
+测试覆盖转换时的代码、链接、表格、图片和 TeX 保留、下载失败处理、封面布局与溢出，以及文章组装。封面测试需要已安装 Chromium。有本地 `work/lect05/` 抓取快照时，测试还会比对第 5 讲的全文。
 
 ## 许可证
 

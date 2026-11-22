@@ -1,5 +1,6 @@
-"""Verify the checked-in real lecture against its original HTML snapshot."""
+"""Verify the published lecture against its local source snapshot."""
 
+import json
 import re
 import sys
 import unittest
@@ -9,10 +10,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from fetch_article import ROOT, article_body
 
 
+SNAPSHOT = ROOT / 'work/lect05'
+
+
 class LectureFiveTests(unittest.TestCase):
+    def setUp(self):
+        if not all((SNAPSHOT / name).is_file() for name in ('source.html', 'source.md', 'metadata.json')):
+            self.skipTest('第 5 讲的本地抓取快照不完整')
+
     def test_complete_body_text_and_code_match_html_snapshot(self):
-        body = article_body((ROOT / 'work/lect05/source.html').read_text(encoding='utf-8'))
-        markdown = (ROOT / 'work/lect05/source.md').read_text(encoding='utf-8')
+        body = article_body((SNAPSHOT / 'source.html').read_text(encoding='utf-8'))
+        markdown = (SNAPSHOT / 'source.md').read_text(encoding='utf-8')
         plain = re.sub(r'\[([^\]]+)\]\([^\n]+?\)', r'\1', markdown)
         plain = re.sub(r'^```[^\n]*$', '', plain, flags=re.M)
         plain = re.sub(r'^#{1,6} |^- ', '', plain, flags=re.M)
@@ -26,8 +34,7 @@ class LectureFiveTests(unittest.TestCase):
             self.assertIn(link['href'], markdown)
 
     def test_formatted_article_retains_body_and_images_resolve(self):
-        import json
-        metadata = json.loads((ROOT / 'work/lect05/metadata.json').read_text(encoding='utf-8'))
+        metadata = json.loads((SNAPSHOT / 'metadata.json').read_text(encoding='utf-8'))
         source = (ROOT / metadata['source_file']).read_text(encoding='utf-8')
         published_path = ROOT / metadata['publish_file']
         published = published_path.read_text(encoding='utf-8')
@@ -45,7 +52,7 @@ class LectureFiveTests(unittest.TestCase):
             return [re.sub(r'\s+', '', p) for p in re.split(r'\n\s*\n', text.strip())]
 
         self.assertEqual(normalize_format(body), normalize_format(source))
-        original = article_body((ROOT / 'work/lect05/source.html').read_text(encoding='utf-8'))
+        original = article_body((SNAPSHOT / 'source.html').read_text(encoding='utf-8'))
         for code in original.select('pre code'):
             self.assertIn(code.get_text().rstrip('\n'), body)
         self.assertIn('CC BY-NC 4.0', published)

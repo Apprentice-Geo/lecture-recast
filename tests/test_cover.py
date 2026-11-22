@@ -29,7 +29,7 @@ OUTLINE = {
 
 class CoverTests(unittest.TestCase):
     def test_preview_loads_relative_assets_offline(self):
-        with tempfile.TemporaryDirectory(prefix="cover preview ", dir=ROOT / "work") as folder:
+        with tempfile.TemporaryDirectory(prefix="cover preview ", dir=ROOT) as folder:
             folder = Path(folder)
             data = self.sample("grouped")
             source = folder / "analysis.json"
